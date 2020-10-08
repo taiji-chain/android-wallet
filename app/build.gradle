@@ -1,0 +1,93 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        applicationId "io.taiji.wallet"
+        minSdkVersion 23
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    task ndkBuild(type: Exec) {
+        def rootDir = project.rootDir
+        def localProperties = new File(rootDir, "local.properties")
+        Properties properties = new Properties()
+        localProperties.withInputStream { instr ->
+            properties.load(instr)
+        }
+        def ndkDir = properties.getProperty('ndk.dir')
+
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            commandLine ndkDir + '\\ndk-build.cmd',
+                    'NDK_LIBS_OUT=main/jniLibs',
+                    'NDK_PROJECT_PATH=' + rootDir + '\\app\\src',
+                    'APP_BUILD_SCRIPT=jni/Android.mk',
+                    '-C',
+                    file('src').absolutePath
+        } else {
+            commandLine ndkDir + '/ndk-build',
+                    'NDK_LIBS_OUT=main/jniLibs',
+                    'NDK_PROJECT_PATH=' + rootDir + '/app/src',
+                    'APP_BUILD_SCRIPT=jni/Android.mk',
+                    '-C',
+                    file('src').absolutePath
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn ndkBuild
+    }
+
+}
+
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation 'com.github.clans:fab:1.6.4'
+    implementation 'me.dm7.barcodescanner:zxing:1.8.4'
+    implementation 'me.zhanghai.android.patternlock:library:2.1.2'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'com.squareup.okhttp3:okhttp:3.8.1'
+    implementation 'androidx.multidex:multidex:2.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
+    implementation 'androidx.navigation:navigation-fragment:2.3.0'
+    implementation 'androidx.navigation:navigation-ui:2.3.0'
+    implementation 'me.grantland:autofittextview:0.2.1'
+    implementation 'com.afollestad.material-dialogs:core:0.9.4.5'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
+    implementation 'com.github.apl-devs:appintro:v4.1.0'
+    implementation 'io.github.kobakei:ratethisapp:1.2.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+//    implementation 'com.networknt:taiji-crypto:1.0.0'
+//    implementation 'com.networknt:taiji-crypto:1.0.0'
+//    implementation 'com.networknt:taiji-client:1.0.0'
+//    implementation 'com.networknt:taiji-utility:1.0.0'
+//    implementation 'com.networknt:event-common:1.0.0'
+//    implementation 'com.networknt:taiji-token:1.0.0'
+//    implementation 'com.networknt:taiji-kyc:1.0.0'
+    implementation 'org.web3j:core-android:2.2.1'
+    implementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
+    implementation("com.mikepenz:materialdrawer:5.9.1@aar") {
+        transitive = true
+    }
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+}
