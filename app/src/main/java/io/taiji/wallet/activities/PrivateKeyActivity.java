@@ -14,7 +14,7 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 
 
-import org.web3j.crypto.Credentials;
+import com.networknt.taiji.crypto.Credentials;
 
 import io.taiji.wallet.R;
 import io.taiji.wallet.utils.WalletStorage;

@@ -9,9 +9,9 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 
 import org.json.JSONException;
-import org.web3j.crypto.CipherException;
-import org.web3j.crypto.Credentials;
-import org.web3j.crypto.WalletUtils;
+import com.networknt.taiji.crypto.CipherException;
+import com.networknt.taiji.crypto.Credentials;
+import com.networknt.taiji.crypto.WalletUtils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.channels.FileChannel;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -243,7 +245,7 @@ public class WalletStorage {
         }
     }
 
-    public Credentials getFullWallet(Context context, String password, String wallet) throws IOException, JSONException, CipherException {
+    public Credentials getFullWallet(Context context, String password, String wallet) throws IOException, JSONException, CipherException, NoSuchAlgorithmException, InvalidKeySpecException {
         if (wallet.startsWith("0x"))
             wallet = wallet.substring(2, wallet.length());
         return WalletUtils.loadCredentials(password, new File(context.getFilesDir(), wallet));

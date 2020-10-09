@@ -8,12 +8,11 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
+import org.bouncycastle.util.encoders.Hex;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.spongycastle.util.encoders.Hex;
-import org.web3j.crypto.Credentials;
-import org.web3j.crypto.TransactionEncoder;
-import org.web3j.protocol.core.methods.request.RawTransaction;
+import com.networknt.taiji.crypto.Credentials;
+import com.networknt.taiji.crypto.RawTransaction;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -73,7 +72,7 @@ public class TransactionService extends IntentService {
                     try {
                         JSONObject o = new JSONObject(response.body().string());
                         BigInteger nonce = new BigInteger(o.getString("result").substring(2), 16);
-
+                        /*
                         RawTransaction tx = RawTransaction.createTransaction(
                                 nonce,
                                 new BigInteger(gas_price),
@@ -97,6 +96,7 @@ public class TransactionService extends IntentService {
                         Log.d("txx", "TX: "+bytesToHex(signed));
 
                         forwardTX(signed);
+                         */
                     } catch (Exception e) {
                         e.printStackTrace();
                         error("Can't connect to network, retry it later");

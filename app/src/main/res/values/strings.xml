@@ -115,12 +115,12 @@
     <string name="request_activity_ether">Request Amount</string>
     <string name="request_activity_to">Your Wallets / Addresses</string>
 
-    <string name="no_tx_history">This is the transaction overview showing all ether sent and received to and from other people. After adding a wallet and transferring some ether to it, the transaction and all future transactions will be displayed here.</string>
+    <string name="no_tx_history">This is the transaction overview showing all currencies sent and received to and from other people. After adding a wallet and transferring some Taiji to it, the transaction and all future transactions will be displayed here.</string>
     <string name="no_wallet_history">You currently do not have any wallets. You can easily create or import one using the button below.</string>
 
 
-    <string name="app_intro_text">Welcome to Lunary - the free and Open Source Ether Wallet for Android! Before starting, please take some time to read through our terms of service.</string>
-    <string name="app_intro_title">Lunary Wallet</string>
+    <string name="app_intro_text">Welcome to Taiji - the free and Open Source Taiji Wallet for Android! Before starting, please take some time to read through our terms of service.</string>
+    <string name="app_intro_title">Taiji Wallet</string>
     <string name="app_intro_please_agree">Please read and agree to the terms of service before proceeding</string>
     <string name="app_intro_iagree">I agree to terms of service</string>
     <string name="fragment_send_ether_amount">Amount</string>
@@ -229,7 +229,7 @@
     <string name="gas_limit">Gas Limit:</string>
     <string name="optional_data_as_hex">Optional data as hex</string>
     <string name="data">Data:</string>
-    <string name="send_expert_warning">You can add extra data to send along with your transaction. If you don\'t know what this is then don\'t touch it or bad things may happen!</string>
+    <string name="send_expert_warning">You can add extra data to send along with your transaction. If you don\'t know what this is, then don\'t touch it, or bad things may happen!</string>
     <string name="expert_mode_optional">Expert Mode (Optional)</string>
     <string name="transaction_failed">Transaction failed</string>
     <string name="reddit">Lunary Subreddit</string>
@@ -240,7 +240,7 @@
     <string name="password_in_clear_text">Show Password in clear text</string>
 
     <string name="dialog_write_down_pw_title">Important!</string>
-    <string name="dialog_write_down_pw_text">Lunary will encrypt your Wallet with the password your provided to keep your ether safe. Your password is literally the only way to unlock your wallet and spend your ether, so make sure you dont forget it! We suggest to write it down on a piece of paper.</string>
+    <string name="dialog_write_down_pw_text">Taiji will encrypt your wallet with the password your provided to keep it safe. Your password is literally the only way to unlock your wallet and spend your Taiji currencies and tokens, so make sure you do not forget it! We suggest writing it down on a piece of paper.</string>
     <string name="dialog_back_button">Cancel</string>
     <string name="setting_show_ad">Display Ads</string>
 

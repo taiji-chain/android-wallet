@@ -8,9 +8,10 @@ import android.graphics.Color;
 
 import androidx.core.app.NotificationCompat;
 
-import org.spongycastle.util.encoders.Hex;
-import org.web3j.crypto.CipherException;
-import org.web3j.crypto.ECKeyPair;
+import com.networknt.taiji.crypto.CipherException;
+import com.networknt.taiji.crypto.ECKeyPair;
+
+import org.bouncycastle.util.encoders.Hex;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,28 +42,15 @@ public class WalletGenService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         String password = intent.getStringExtra("PASSWORD");
-        String privatekey = "";
-
-        if (intent.hasExtra("PRIVATE_KEY")) {
-            normalMode = false;
-            privatekey = intent.getStringExtra("PRIVATE_KEY");
-        }
+        String chainId = intent.getStringExtra("BANK_ID");
 
         sendNotification();
         try {
-            String walletAddress;
-            if (normalMode) { // Create new key
-                walletAddress = OwnWalletUtils.generateNewWalletFile(password, new File(this.getFilesDir(), ""), true);
-            } else { // Privatekey passed
-                ECKeyPair keys = ECKeyPair.create(Hex.decode(privatekey));
-                walletAddress = OwnWalletUtils.generateWalletFile(password, keys, new File(this.getFilesDir(), ""), true);
-            }
-
-            WalletStorage.getInstance(this).add(new FullWallet("0x" + walletAddress, walletAddress), this);
-            AddressNameConverter.getInstance(this).put("0x" + walletAddress, "Wallet " + ("0x" + walletAddress).substring(0, 6), this);
+            String walletAddress = OwnWalletUtils.generateNewWalletFile(password, new File(this.getFilesDir(), ""), chainId, true);
+            WalletStorage.getInstance(this).add(new FullWallet(walletAddress, walletAddress), this);
+            AddressNameConverter.getInstance(this).put(walletAddress, "Wallet " + walletAddress.substring(0, 6), this);
             Settings.walletBeingGenerated = false;
-
-            finished("0x" + walletAddress);
+            finished(walletAddress);
         } catch (CipherException e) {
             e.printStackTrace();
         } catch (IOException e) {

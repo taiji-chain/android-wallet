@@ -114,7 +114,7 @@
                 <ImageView
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:src="@drawable/etherkont" />
+                    android:src="@drawable/taiji_trans" />
 
                 <TextView
                     android:id="@+id/textView1"

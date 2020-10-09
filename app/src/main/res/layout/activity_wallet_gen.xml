@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="false"
-    tools:context="rehanced.com.simpleetherwallet.activities.MainActivity">
+    tools:context="io.taiji.wallet.activities.MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
@@ -90,6 +90,15 @@
                     android:maxLines="1"
                     android:singleLine="true" />
 
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <Spinner
+                android:id="@+id/bankId"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
