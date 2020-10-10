@@ -218,6 +218,22 @@ public abstract class FragmentWalletsAbstract extends Fragment implements View.O
             onItemsLoadComplete();
         } else {
             nothingToShow.setVisibility(View.GONE);
+            final List<WalletDisplay> w;
+            try {
+                w = ResponseParser.parseWallets("", storedwallets, ac);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+            wallets.addAll(w);
+            walletAdapter.notifyDataSetChanged();
+            for (int i = 0; i < wallets.size(); i++) {
+                balance += wallets.get(i).getBalance();
+            }
+            balanceView.setText(ExchangeCalculator.getInstance().displayBalanceNicely(ExchangeCalculator.getInstance().convertRate(balance, ExchangeCalculator.getInstance().getCurrent().getRate())) + " " + ExchangeCalculator.getInstance().getCurrent().getName());
+            onItemsLoadComplete();
+
+            /*
             EtherscanAPI.getInstance().getBalances(storedwallets, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
@@ -261,6 +277,7 @@ public abstract class FragmentWalletsAbstract extends Fragment implements View.O
                     });
                 }
             });
+             */
         }
     }
 

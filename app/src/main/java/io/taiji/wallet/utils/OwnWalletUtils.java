@@ -1,27 +1,20 @@
 package io.taiji.wallet.utils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import android.util.Log;
 
 import com.networknt.config.JsonMapper;
-import com.networknt.taiji.crypto.AddressGenerator;
 import com.networknt.taiji.crypto.CipherException;
 import com.networknt.taiji.crypto.ECKeyPair;
-import com.networknt.taiji.crypto.Keys;
 import com.networknt.taiji.crypto.Wallet;
 import com.networknt.taiji.crypto.WalletFile;
 import com.networknt.taiji.crypto.WalletUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 
 public class OwnWalletUtils extends WalletUtils {
-
-    // OVERRIDING THOSE METHODS BECAUSE OF CUSTOM WALLET NAMING (CUTING ALL THE TIMESTAMPTS FOR INTERNAL STORAGE)
-
+    /*
     public static String generateFullNewWalletFile(String password, File destinationDirectory, String chainId)
             throws NoSuchAlgorithmException, NoSuchProviderException,
             InvalidAlgorithmParameterException, CipherException, IOException {
@@ -37,14 +30,15 @@ public class OwnWalletUtils extends WalletUtils {
         KeyPair encryptingKeyPair = Keys.createCipherKeyPair();
         return generateWalletFile(password, ecKeyPair, encryptingKeyPair, destinationDirectory, useFullScrypt);
     }
+    */
 
     public static String generateWalletFile(
             String password, ECKeyPair ecKeyPair, KeyPair encryptingKeyPair, File destinationDirectory, boolean useFullScrypt)
             throws CipherException, IOException {
-
-        WalletFile walletFile;
-        walletFile = Wallet.createStandard(password, ecKeyPair, encryptingKeyPair);
+        Log.i("TAG", "Gererating wallet file");
+        WalletFile walletFile = Wallet.createStandard(password, ecKeyPair, encryptingKeyPair);
         String fileName = getWalletFileName(walletFile);
+        Log.i("TAG", "Wallet fileName " + fileName + " in destination " + destinationDirectory.getAbsolutePath());
         File destination = new File(destinationDirectory, fileName);
         JsonMapper.objectMapper.writeValue(destination, walletFile);
         return fileName;

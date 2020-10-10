@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import org.json.JSONException;
 import com.networknt.taiji.crypto.CipherException;
@@ -271,6 +272,7 @@ public class WalletStorage {
         mapdb = (ArrayList<StorableWallet>) oos.readObject();
         oos.close();
         fout.close();
+        Log.i("TAG", "mapdb is loaded with entries " + mapdb.size());
     }
 
 }

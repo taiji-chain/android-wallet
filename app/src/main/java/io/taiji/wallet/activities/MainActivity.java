@@ -20,7 +20,6 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
-import com.kobakei.ratethisapp.RateThisApp;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -43,7 +42,7 @@ import io.taiji.wallet.fragments.FragmentTransactionsAll;
 import io.taiji.wallet.fragments.FragmentWallets;
 import io.taiji.wallet.interfaces.NetworkUpdateListener;
 import io.taiji.wallet.services.NotificationLauncher;
-import io.taiji.wallet.services.WalletGenService;
+import io.taiji.wallet.services.WalletGenRunnerService;
 import io.taiji.wallet.utils.AddressNameConverter;
 import io.taiji.wallet.utils.Dialogs;
 import io.taiji.wallet.utils.ExchangeCalculator;
@@ -319,7 +318,7 @@ public class MainActivity extends SecureAppCompatActivity implements NetworkUpda
             }
         } else if (requestCode == io.taiji.wallet.activities.WalletGenActivity.REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                Intent generatingService = new Intent(this, WalletGenService.class);
+                Intent generatingService = new Intent(this, WalletGenRunnerService.class);
                 generatingService.putExtra("PASSWORD", data.getStringExtra("PASSWORD"));
                 generatingService.putExtra("BANK_ID", data.getStringExtra("BANK_ID"));
                 if (data.hasExtra("PRIVATE_KEY"))

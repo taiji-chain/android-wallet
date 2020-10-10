@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.text.InputType;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -354,7 +355,8 @@ public class Dialogs {
         builder.setPositiveButton(R.string.action_sign_in, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                c.gen();
+                Log.i("TAG", "calling WalletGenRunnerService");
+                c.startWalletGenRunnerSerivce();
                 dialog.cancel();
             }
         });

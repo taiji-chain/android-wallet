@@ -23,6 +23,8 @@
 
     <!-- Used for optional Applock Feature -->
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+    <!-- Used for foreground service to generate wallet -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -148,8 +150,9 @@
             android:exported="false" />
 
         <service
-            android:name=".services.WalletGenService"
-            android:exported="false" />
+            android:name=".services.WalletGenRunnerService"
+            android:foregroundServiceType="dataSync" />
+
         <service
             android:name=".services.TransactionService"
             android:exported="false" />

@@ -66,6 +66,21 @@ public class ResponseParser {
     }
 
     public static ArrayList<WalletDisplay> parseWallets(String response, ArrayList<StorableWallet> storedwallets, Context context) throws Exception {
+        // TODO parse the response from the server.
+        ArrayList<WalletDisplay> display = new ArrayList<WalletDisplay>();
+        for (int i = 0; i < storedwallets.size(); i++) {
+            BigInteger balance = new BigInteger("0");
+            String walletname = AddressNameConverter.getInstance(context).get(storedwallets.get(i).getPubKey());
+            display.add(new WalletDisplay(
+                    walletname == null ? "New Wallet" : walletname,
+                    storedwallets.get(i).getPubKey(),
+                    balance,
+                    storedwallets.get(i) instanceof WatchWallet ? WalletDisplay.WATCH_ONLY : WalletDisplay.NORMAL
+            ));
+        }
+        return display;
+
+        /*
         ArrayList<WalletDisplay> display = new ArrayList<WalletDisplay>();
         JSONArray data = new JSONObject(response).getJSONArray("result");
         for (int i = 0; i < storedwallets.size(); i++) {
@@ -85,6 +100,7 @@ public class ResponseParser {
             ));
         }
         return display;
+         */
     }
 
     public static ArrayList<TokenDisplay> parseTokens(Context c, String response, LastIconLoaded callback) throws Exception {
