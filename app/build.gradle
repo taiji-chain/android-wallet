@@ -96,8 +96,6 @@ dependencies {
     implementation 'io.github.kobakei:ratethisapp:1.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'com.networknt:taiji-crypto:1.0.0'
-    implementation 'com.networknt:taiji-crypto:1.0.0'
-    implementation 'com.networknt:taiji-client:1.0.0'
     implementation 'com.networknt:taiji-utility:1.0.0'
     implementation 'com.networknt:event-common:1.0.0'
     implementation 'com.networknt:taiji-token:1.0.0'
