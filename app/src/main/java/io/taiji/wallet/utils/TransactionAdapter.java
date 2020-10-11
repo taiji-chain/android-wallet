@@ -132,8 +132,8 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             holder.type.setVisibility(box.getType() == TransactionDisplay.NORMAL ? View.INVISIBLE : View.VISIBLE);
             holder.error.setVisibility(box.isError() ? View.VISIBLE : View.GONE);
-            holder.my_addressicon.setImageBitmap(Blockies.createIcon(box.getFromAddress().toLowerCase()));
-            holder.other_addressicon.setImageBitmap(Blockies.createIcon(box.getToAddress().toLowerCase()));
+            holder.my_addressicon.setImageBitmap(Blockies.createIcon(box.getFromAddress()));
+            holder.other_addressicon.setImageBitmap(Blockies.createIcon(box.getToAddress()));
 
             setAnimation(holder.container, position);
         }

@@ -95,7 +95,7 @@ public class TransactionDisplay implements Comparable {
     }
 
     public String getFromAddress() {
-        return fromAddress.toLowerCase();
+        return fromAddress;
     }
 
     public void setFromAddress(String fromAddress) {
@@ -103,7 +103,7 @@ public class TransactionDisplay implements Comparable {
     }
 
     public String getToAddress() {
-        return toAddress.toLowerCase();
+        return toAddress;
     }
 
     public void setToAddress(String toAddress) {

@@ -272,7 +272,6 @@ public class WalletStorage {
         mapdb = (ArrayList<StorableWallet>) oos.readObject();
         oos.close();
         fout.close();
-        Log.i("TAG", "mapdb is loaded with entries " + mapdb.size());
     }
 
 }

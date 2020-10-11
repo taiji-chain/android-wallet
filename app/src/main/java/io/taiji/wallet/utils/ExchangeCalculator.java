@@ -15,7 +15,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 import io.taiji.wallet.data.CurrencyEntry;
 import io.taiji.wallet.data.TokenDisplay;
-import io.taiji.wallet.network.EtherscanAPI;
+import io.taiji.wallet.network.TaijiAPI;
 
 public class ExchangeCalculator {
 
@@ -193,7 +193,7 @@ public class ExchangeCalculator {
         }
 
         //Log.d("updateingn", "Initialize price update");
-        EtherscanAPI.getInstance().getEtherPrice(new Callback() {
+        TaijiAPI.getInstance().getEtherPrice(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
             }
@@ -218,7 +218,7 @@ public class ExchangeCalculator {
     }
 
     private void convert(final String currency, final NetworkUpdateListener update) throws IOException {
-        EtherscanAPI.getInstance().getPriceConversionRates(new Callback() {
+        TaijiAPI.getInstance().getPriceConversionRates(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 

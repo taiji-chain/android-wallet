@@ -25,15 +25,15 @@ import io.taiji.wallet.utils.Key;
 import io.taiji.wallet.utils.RequestCache;
 import io.taiji.wallet.utils.TokenIconCache;
 
-public class EtherscanAPI {
+public class TaijiAPI {
 
     private String token;
 
-    private static EtherscanAPI instance;
+    private static TaijiAPI instance;
 
-    public static EtherscanAPI getInstance() {
+    public static TaijiAPI getInstance() {
         if (instance == null)
-            instance = new EtherscanAPI();
+            instance = new TaijiAPI();
         return instance;
     }
 
@@ -155,7 +155,7 @@ public class EtherscanAPI {
 
 
     public void getBalance(String address, Callback b) throws IOException {
-        get("https://api.etherscan.io/api?module=account&action=balance&address=" + address + "&apikey=" + token, b);
+        get("https://test.taiji.io/account/" + address, b);
     }
 
 
@@ -177,10 +177,10 @@ public class EtherscanAPI {
     }
 
     public void getBalances(ArrayList<StorableWallet> addresses, Callback b) throws IOException {
-        String url = "https://api.etherscan.io/api?module=account&action=balancemulti&address=";
+        String url = "https://test.taiji.io/account?addresses=";
         for (StorableWallet address : addresses)
             url += address.getPubKey() + ",";
-        url = url.substring(0, url.length() - 1) + "&tag=latest&apikey=" + token; // remove last , AND add token
+        url = url.substring(0, url.length() - 1); // remove last ,
         get(url, b);
     }
 
@@ -204,7 +204,7 @@ public class EtherscanAPI {
     }
 
 
-    private EtherscanAPI() {
+    private TaijiAPI() {
         token = new Key("").toString();
     }
 

@@ -60,6 +60,9 @@ public class SettingsActivity extends AppCompatActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.pref_general);
+
             final SwitchPreference zeroAmountTx = (SwitchPreference) findPreference("zeroAmountSwitch");
             zeroAmountTx.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override

@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -44,9 +45,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 import io.taiji.wallet.R;
 import io.taiji.wallet.activities.AddressDetailActivity;
 import io.taiji.wallet.activities.MainActivity;
@@ -57,7 +55,7 @@ import io.taiji.wallet.data.CurrencyEntry;
 import io.taiji.wallet.data.WalletDisplay;
 import io.taiji.wallet.interfaces.PasswordDialogCallback;
 import io.taiji.wallet.interfaces.StorableWallet;
-import io.taiji.wallet.network.EtherscanAPI;
+import io.taiji.wallet.network.TaijiAPI;
 import io.taiji.wallet.utils.AddressNameConverter;
 import io.taiji.wallet.utils.AppBarStateChangeListener;
 import io.taiji.wallet.utils.Dialogs;
@@ -66,6 +64,9 @@ import io.taiji.wallet.utils.ResponseParser;
 import io.taiji.wallet.utils.Settings;
 import io.taiji.wallet.utils.WalletAdapter;
 import io.taiji.wallet.utils.WalletStorage;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 import uk.co.deanwild.materialshowcaseview.PrefsManager;
 import uk.co.deanwild.materialshowcaseview.shape.RectangleShape;
@@ -218,25 +219,10 @@ public abstract class FragmentWalletsAbstract extends Fragment implements View.O
             onItemsLoadComplete();
         } else {
             nothingToShow.setVisibility(View.GONE);
-            final List<WalletDisplay> w;
-            try {
-                w = ResponseParser.parseWallets("", storedwallets, ac);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
-            }
-            wallets.addAll(w);
-            walletAdapter.notifyDataSetChanged();
-            for (int i = 0; i < wallets.size(); i++) {
-                balance += wallets.get(i).getBalance();
-            }
-            balanceView.setText(ExchangeCalculator.getInstance().displayBalanceNicely(ExchangeCalculator.getInstance().convertRate(balance, ExchangeCalculator.getInstance().getCurrent().getRate())) + " " + ExchangeCalculator.getInstance().getCurrent().getName());
-            onItemsLoadComplete();
-
-            /*
-            EtherscanAPI.getInstance().getBalances(storedwallets, new Callback() {
+            TaijiAPI.getInstance().getBalances(storedwallets, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
+                    Log.i("TAG", "Failure is called");
                     if (ac != null)
                         ac.snackError("Can't fetch account balances. Invalid response.");
                     final List<WalletDisplay> w = new ArrayList<WalletDisplay>();
@@ -277,7 +263,6 @@ public abstract class FragmentWalletsAbstract extends Fragment implements View.O
                     });
                 }
             });
-             */
         }
     }
 

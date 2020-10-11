@@ -30,6 +30,8 @@ class WalletGenRunnerService : Service() {
     companion object {
         const val notificationId = 93430
         var isRunning = false
+        var password = ""
+        var bankId = ""
     }
 
     private val notification by lazy {
@@ -52,10 +54,6 @@ class WalletGenRunnerService : Service() {
         super.onCreate()
         Log.i("TAG", "onCreate is called")
         isRunning = true
-
-        // TODO pass the variables to the service.
-        val password = "123456789"
-        val bankId = "0"
         var count = 0
         var keyPair : ECKeyPair
         CoroutineScope(Dispatchers.Default).launch {
@@ -73,7 +71,7 @@ class WalletGenRunnerService : Service() {
                 val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
                 notificationManager.notify(notificationId, notification)
                 keyPair = generateKeyPair()
-                Log.i("TAG", "generate address: " + Keys.getAddress(keyPair))
+                //Log.i("TAG", "generate address: " + Keys.getAddress(keyPair))
                 if(Keys.getAddress(keyPair).startsWith(bankId)) {
                     break;
                 }
@@ -109,9 +107,13 @@ class WalletGenRunnerService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? {
         TODO("Not yet implemented")
-        val password = intent!!.getStringExtra("PASSWORD")
-        val chainId = intent.getStringExtra("BANK_ID")
+    }
 
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int) : Int {
+        password = intent?.getStringExtra("PASSWORD").toString()
+        bankId = intent?.getStringExtra("BANK_ID").toString()
+        Log.i("TAG", password + " " + bankId)
+        return START_NOT_STICKY
     }
 
     override fun onDestroy() {

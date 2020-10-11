@@ -146,9 +146,9 @@ public class Dialogs {
         });
 
         ExchangeCalculator ex = ExchangeCalculator.getInstance();
-        contractIcon.setImageBitmap(Blockies.createIcon(tok.getContractAddr().toLowerCase()));
+        contractIcon.setImageBitmap(Blockies.createIcon(tok.getContractAddr()));
         tokenname.setText(tok.getName());
-        contractAddr.setText(tok.getContractAddr().toLowerCase());
+        contractAddr.setText(tok.getContractAddr());
         supply.setText(ex.displayUsdNicely(tok.getTotalSupplyLong()) + " " + tok.getShorty());
         priceUSD.setText(tok.getUsdprice() + " $");
 
@@ -217,13 +217,13 @@ public class Dialogs {
             }
         });
 
-        myicon.setImageBitmap(Blockies.createIcon(tx.getFromAddress().toLowerCase()));
-        othericon.setImageBitmap(Blockies.createIcon(tx.getToAddress().toLowerCase()));
+        myicon.setImageBitmap(Blockies.createIcon(tx.getFromAddress()));
+        othericon.setImageBitmap(Blockies.createIcon(tx.getToAddress()));
 
-        String myName = AddressNameConverter.getInstance(c).get(tx.getFromAddress().toLowerCase());
-        if (myName == null) myName = shortName(tx.getFromAddress().toLowerCase());
-        String otherName = AddressNameConverter.getInstance(c).get(tx.getToAddress().toLowerCase());
-        if (otherName == null) otherName = shortName(tx.getToAddress().toLowerCase());
+        String myName = AddressNameConverter.getInstance(c).get(tx.getFromAddress());
+        if (myName == null) myName = shortName(tx.getFromAddress());
+        String otherName = AddressNameConverter.getInstance(c).get(tx.getToAddress());
+        if (otherName == null) otherName = shortName(tx.getToAddress());
         myAddressname.setText(myName);
         otherAddressname.setText(otherName);
 
@@ -323,7 +323,7 @@ public class Dialogs {
                 inputMgr.hideSoftInputFromWindow(input.getWindowToken(), 0);
                 if (input.getText().toString().length() == 42 && input.getText().toString().startsWith("0x")) {
                     Intent detail = new Intent(c, AddressDetailActivity.class);
-                    detail.putExtra("ADDRESS", input.getText().toString().toLowerCase());
+                    detail.putExtra("ADDRESS", input.getText().toString());
                     c.startActivity(detail);
                 } else {
                     c.snackError("Invalid Ethereum address!");
@@ -355,8 +355,7 @@ public class Dialogs {
         builder.setPositiveButton(R.string.action_sign_in, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Log.i("TAG", "calling WalletGenRunnerService");
-                c.startWalletGenRunnerSerivce();
+                c.startWalletGenRunnerService();
                 dialog.cancel();
             }
         });

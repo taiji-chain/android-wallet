@@ -17,7 +17,7 @@ import okhttp3.Response;
 import io.taiji.wallet.activities.MainActivity;
 import io.taiji.wallet.data.TransactionDisplay;
 import io.taiji.wallet.interfaces.StorableWallet;
-import io.taiji.wallet.network.EtherscanAPI;
+import io.taiji.wallet.network.TaijiAPI;
 import io.taiji.wallet.utils.AppBarStateChangeListener;
 import io.taiji.wallet.utils.RequestCache;
 import io.taiji.wallet.utils.ResponseParser;
@@ -66,7 +66,7 @@ public class FragmentTransactionsAll extends FragmentTransactionsAbstract {
                 try {
                     final StorableWallet currentWallet = storedwallets.get(i);
 
-                    EtherscanAPI.getInstance().getNormalTransactions(currentWallet.getPubKey(), new Callback() {
+                    TaijiAPI.getInstance().getNormalTransactions(currentWallet.getPubKey(), new Callback() {
                         @Override
                         public void onFailure(Call call, IOException e) {
                             if (isAdded()) {
@@ -96,7 +96,7 @@ public class FragmentTransactionsAll extends FragmentTransactionsAbstract {
                             }
                         }
                     }, force);
-                    EtherscanAPI.getInstance().getInternalTransactions(currentWallet.getPubKey(), new Callback() {
+                    TaijiAPI.getInstance().getInternalTransactions(currentWallet.getPubKey(), new Callback() {
                         @Override
                         public void onFailure(Call call, IOException e) {
                             if (isAdded()) {

@@ -153,7 +153,7 @@
     <string name="button_ok">OK</string>
     <string name="wallet_removal_title">ATTENTION: Wallet Removal</string>
     <string name="wallet_removal_sure">Are you sure you want to delete your watch only wallet?</string>
-    <string name="wallet_removal_privkey">! THIS IS A WALLET WITH A PRIVATE KEY ! IF YOU HAVE NO BACKUP AND CONTINUE ALL YOUR ETHER ON THAT WALLET WILL BE LOST FOR EVER! ARE YOU SURE YOU WANT TO PROCEED? WALLET ADDRESS:</string>
+    <string name="wallet_removal_privkey">! THIS IS A WALLET WITH A PRIVATE KEY ! IF YOU HAVE NO BACKUP AND CONTINUE ALL YOUR TAIJI ON THAT WALLET WILL BE LOST FOR EVER! ARE YOU SURE YOU WANT TO PROCEED? WALLET ADDRESS:</string>
     <string name="wallet_removal_last_warning">ARE YOU SURE? WALLET AND ALL COINS / TOKEN ON IT ARE GOING TO GET PERMANENTLY REMOVED. THIS IS THE LAST WARNING FOR WALLET:</string>
     <string name="button_yes">YES</string>
     <string name="button_no">NO</string>
@@ -189,7 +189,7 @@
     <string name="dialog_no_wallets">No Wallets</string>
     <string name="dialog_no_wallets_text">In order to request funds you need a wallet or a watch only address.</string>
     <string name="dialog_no_wallets_found">No Wallets Found</string>
-    <string name="dialog_no_wallets_found_text">Please place the wallet you want to import inside the Lunary folder and make sure it is correctly named. When importing from Mist or other desktop client you don\'t have to rename your wallet.</string>
+    <string name="dialog_no_wallets_found_text">Please place the wallet you want to import inside the Taiji folder and make sure it is correctly named. When importing from other desktop client you don\'t have to rename your wallet.</string>
     <string name="notification_ticker">Incoming Ether Transaction…</string>
     <string name="notification_transfersuc">Transfer successful</string>
     <string name="notification_transferfail">Transfer Failed</string>
@@ -254,6 +254,5 @@
     <string name="activity_private_key_title">Private Key</string>
     <string name="activity_private_key_explanation">This is the unencrypted private key of your wallet. Anyone with access to this key or QR code can spend your funds like ether and tokens. Dont store this unencrypted!</string>
     <string name="activity_private_key_wrong_pw">Your password is not correct - cant decrypt private key!</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

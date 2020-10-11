@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
@@ -18,13 +19,14 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Iterator;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 import io.taiji.wallet.R;
 import io.taiji.wallet.activities.MainActivity;
-import io.taiji.wallet.network.EtherscanAPI;
+import io.taiji.wallet.network.TaijiAPI;
 import io.taiji.wallet.utils.Blockies;
 import io.taiji.wallet.utils.ExchangeCalculator;
 import io.taiji.wallet.utils.WalletStorage;
@@ -44,7 +46,7 @@ public class NotificationService extends IntentService {
         }
 
         try {
-            EtherscanAPI.getInstance().getBalances(WalletStorage.getInstance(this).get(), new Callback() {
+            TaijiAPI.getInstance().getBalances(WalletStorage.getInstance(this).get(), new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                 }
@@ -53,7 +55,7 @@ public class NotificationService extends IntentService {
                 public void onResponse(Call call, final Response response) throws IOException {
                     JSONArray data = null;
                     try {
-                        data = new JSONObject(response.body().string()).getJSONArray("result");
+                        data = new JSONArray(response.body().string());
                         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(NotificationService.this);
 
                         boolean notify = false;
@@ -61,14 +63,20 @@ public class NotificationService extends IntentService {
                         String address = "";
                         SharedPreferences.Editor editor = preferences.edit();
                         for (int i = 0; i < data.length(); i++) {
-                            if (!preferences.getString(data.getJSONObject(i).getString("account"), data.getJSONObject(i).getString("balance")).equals(data.getJSONObject(i).getString("balance"))) {
-                                if (new BigInteger(preferences.getString(data.getJSONObject(i).getString("account"), data.getJSONObject(i).getString("balance"))).compareTo(new BigInteger(data.getJSONObject(i).getString("balance"))) < 1) { // Nur wenn höhere Balance als vorher
+                            JSONObject addressMap = data.getJSONObject(i);
+                            Iterator<String> keys = addressMap.keys();
+                            address = keys.next();
+                            Log.i("TAG", "address = " + address);
+                            JSONObject currencyMap = (JSONObject)addressMap.get(address);
+                            Log.i("TAG", "balance = " + currencyMap.getString("taiji"));
+                            String balance = currencyMap.getString("taiji");
+                            if (!preferences.getString(address, balance).equals(balance)) {
+                                if (new BigInteger(preferences.getString(address, balance)).compareTo(new BigInteger(balance)) < 1) {
                                     notify = true;
-                                    address = data.getJSONObject(i).getString("account");
-                                    amount = amount.add((new BigInteger(data.getJSONObject(i).getString("balance")).subtract(new BigInteger(preferences.getString(address, "0")))));
+                                    amount = amount.add((new BigInteger(balance).subtract(new BigInteger(preferences.getString(address, "0")))));
                                 }
                             }
-                            editor.putString(data.getJSONObject(i).getString("account"), data.getJSONObject(i).getString("balance"));
+                            editor.putString(address, balance);
                         }
                         editor.commit();
                         if (notify) {
@@ -93,7 +101,7 @@ public class NotificationService extends IntentService {
         String channelId = "6321";
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(R.drawable.ic_notification)
-                .setLargeIcon(Blockies.createIcon(address.toLowerCase()))
+                .setLargeIcon(Blockies.createIcon(address))
                 .setColor(0x2d435c)
                 .setTicker(getString(R.string.notification_ticker))
                 .setLights(Color.CYAN, 3000, 3000)

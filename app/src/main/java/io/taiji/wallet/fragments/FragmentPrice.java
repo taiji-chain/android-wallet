@@ -40,7 +40,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 import io.taiji.wallet.R;
 import io.taiji.wallet.activities.MainActivity;
-import io.taiji.wallet.network.EtherscanAPI;
+import io.taiji.wallet.network.TaijiAPI;
 import io.taiji.wallet.utils.ExchangeCalculator;
 import io.taiji.wallet.views.DontShowNegativeFormatter;
 import io.taiji.wallet.views.HourXFormatter;
@@ -179,7 +179,7 @@ public class FragmentPrice extends Fragment {
 
     private void loadPriceData(final long time, int period) throws IOException {
 
-        EtherscanAPI.getInstance().getPriceChart((System.currentTimeMillis() / 1000) - time, period, displayInUsd, new Callback() { // 1467321600,
+        TaijiAPI.getInstance().getPriceChart((System.currentTimeMillis() / 1000) - time, period, displayInUsd, new Callback() { // 1467321600,
             @Override
             public void onFailure(Call call, IOException e) {
                 if(ac == null) return;

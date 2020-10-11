@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import io.taiji.wallet.data.TokenDisplay;
 import io.taiji.wallet.data.TransactionDisplay;
@@ -17,11 +18,10 @@ import io.taiji.wallet.data.WalletDisplay;
 import io.taiji.wallet.data.WatchWallet;
 import io.taiji.wallet.interfaces.LastIconLoaded;
 import io.taiji.wallet.interfaces.StorableWallet;
-import io.taiji.wallet.network.EtherscanAPI;
+import io.taiji.wallet.network.TaijiAPI;
 
 
 public class ResponseParser {
-
 
     public static ArrayList<TransactionDisplay> parseTransactions(String response, String walletname, String address, byte type) {
         try {
@@ -66,28 +66,19 @@ public class ResponseParser {
     }
 
     public static ArrayList<WalletDisplay> parseWallets(String response, ArrayList<StorableWallet> storedwallets, Context context) throws Exception {
-        // TODO parse the response from the server.
         ArrayList<WalletDisplay> display = new ArrayList<WalletDisplay>();
-        for (int i = 0; i < storedwallets.size(); i++) {
-            BigInteger balance = new BigInteger("0");
-            String walletname = AddressNameConverter.getInstance(context).get(storedwallets.get(i).getPubKey());
-            display.add(new WalletDisplay(
-                    walletname == null ? "New Wallet" : walletname,
-                    storedwallets.get(i).getPubKey(),
-                    balance,
-                    storedwallets.get(i) instanceof WatchWallet ? WalletDisplay.WATCH_ONLY : WalletDisplay.NORMAL
-            ));
-        }
-        return display;
-
-        /*
-        ArrayList<WalletDisplay> display = new ArrayList<WalletDisplay>();
-        JSONArray data = new JSONObject(response).getJSONArray("result");
+        JSONArray data = new JSONArray(response);
         for (int i = 0; i < storedwallets.size(); i++) {
             BigInteger balance = new BigInteger("0");
             for (int j = 0; j < data.length(); j++) {
-                if (data.getJSONObject(j).getString("account").equalsIgnoreCase(storedwallets.get(i).getPubKey())) {
-                    balance = new BigInteger(data.getJSONObject(i).getString("balance"));
+                JSONObject addressMap = data.getJSONObject(j);
+                Iterator<String> keys = addressMap.keys();
+                String address = keys.next();
+                Log.i("TAG", "address = " + address);
+                if (address.equalsIgnoreCase(storedwallets.get(i).getPubKey())) {
+                    JSONObject currencyMap = (JSONObject)addressMap.get(address);
+                    Log.i("TAG", "balance = " + currencyMap.getString("taiji"));
+                    balance = new BigInteger(currencyMap.getString("taiji"));
                     break;
                 }
             }
@@ -100,7 +91,6 @@ public class ResponseParser {
             ));
         }
         return display;
-         */
     }
 
     public static ArrayList<TokenDisplay> parseTokens(Context c, String response, LastIconLoaded callback) throws Exception {
@@ -126,7 +116,7 @@ public class ResponseParser {
             }
 
             // Download icon and cache it
-            EtherscanAPI.getInstance().loadTokenIcon(c, currentToken.getJSONObject("tokenInfo").getString("name"), i == data.length() - 1, callback);
+            TaijiAPI.getInstance().loadTokenIcon(c, currentToken.getJSONObject("tokenInfo").getString("name"), i == data.length() - 1, callback);
 
         }
         return display;
@@ -137,9 +127,11 @@ public class ResponseParser {
     }
 
     public static String parseBalance(String response, int comma) throws JSONException {
-        String balance = new JSONObject(response).getString("result");
+        Log.i("TAG", "response = " + response);
+        String balance = new JSONObject(response).getString("taiji");
+        Log.i("balance = ", balance);
         if (balance.equals("0")) return "0";
-        return new BigDecimal(balance).divide(new BigDecimal(1000000000000000000d), comma, BigDecimal.ROUND_UP).toPlainString();
+        return new BigDecimal(balance).toPlainString();
     }
 
     public static BigInteger parseGasPrice(String response) throws Exception {

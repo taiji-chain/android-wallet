@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +47,7 @@ import io.taiji.wallet.data.CurrencyEntry;
 import io.taiji.wallet.data.TokenDisplay;
 import io.taiji.wallet.data.WatchWallet;
 import io.taiji.wallet.interfaces.LastIconLoaded;
-import io.taiji.wallet.network.EtherscanAPI;
+import io.taiji.wallet.network.TaijiAPI;
 import io.taiji.wallet.utils.AddressNameConverter;
 import io.taiji.wallet.utils.AppBarStateChangeListener;
 import io.taiji.wallet.utils.Blockies;
@@ -60,7 +61,7 @@ import io.taiji.wallet.utils.WalletStorage;
 public class FragmentDetailOverview extends Fragment implements View.OnClickListener, View.OnCreateContextMenuListener, LastIconLoaded {
 
     private AddressDetailActivity ac;
-    private String ethaddress = "";
+    private String taijiAddress = "";
     private byte type;
     private TextView balance, address, currency;
     private ImageView icon;
@@ -77,7 +78,7 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
         View rootView = inflater.inflate(R.layout.fragment_detail_ov, container, false);
 
         ac = (AddressDetailActivity) this.getActivity();
-        ethaddress = getArguments().getString("ADDRESS");
+        taijiAddress = getArguments().getString("ADDRESS");
         type = getArguments().getByte("TYPE");
 
         icon = (ImageView) rootView.findViewById(R.id.addressimage);
@@ -129,8 +130,8 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
             }
         });
 
-        icon.setImageBitmap(Blockies.createIcon(ethaddress, 24));
-        address.setText(ethaddress);
+        icon.setImageBitmap(Blockies.createIcon(taijiAddress, 24));
+        address.setText(taijiAddress);
 
         FloatingActionButton fab_setName = (FloatingActionButton) rootView.findViewById(R.id.set_name);
         fab_setName.setOnClickListener(new View.OnClickListener() {
@@ -148,7 +149,7 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
                     Dialogs.noFullWallet(ac);
                 } else {
                     Intent tx = new Intent(ac, SendActivity.class);
-                    tx.putExtra("TO_ADDRESS", ethaddress);
+                    tx.putExtra("TO_ADDRESS", taijiAddress);
                     ac.startActivityForResult(tx, SendActivity.REQUEST_CODE);
                 }
             }
@@ -162,7 +163,7 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
                     Dialogs.noFullWallet(ac);
                 } else {
                     Intent tx = new Intent(ac, SendActivity.class);
-                    tx.putExtra("FROM_ADDRESS", ethaddress);
+                    tx.putExtra("FROM_ADDRESS", taijiAddress);
                     ac.startActivityForResult(tx, SendActivity.REQUEST_CODE);
                 }
             }
@@ -172,7 +173,7 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
         fab_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final boolean suc = WalletStorage.getInstance(ac).add(new WatchWallet(ethaddress), ac);
+                final boolean suc = WalletStorage.getInstance(ac).add(new WatchWallet(taijiAddress), ac);
                 new Handler().postDelayed(
                         new Runnable() {
                             @Override
@@ -186,7 +187,7 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
         if (type == AddressDetailActivity.OWN_WALLET) {
             fab_add.setVisibility(View.GONE);
         }
-        if (!WalletStorage.getInstance(ac).isFullWallet(ethaddress)) {
+        if (!WalletStorage.getInstance(ac).isFullWallet(taijiAddress)) {
             send_ether_from.setVisibility(View.GONE);
         }
 
@@ -215,7 +216,7 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
     public void update(boolean force) throws IOException {
         token.clear();
         balanceDouble = new BigDecimal("0");
-        EtherscanAPI.getInstance().getBalance(ethaddress, new Callback() {
+        TaijiAPI.getInstance().getBalance(taijiAddress, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 ac.runOnUiThread(new Runnable() {
@@ -229,11 +230,12 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                BigDecimal ethbal;
+                Log.i("TAG", "response = " + response);
+                BigDecimal bal;
                 try {
-                    ethbal = new BigDecimal(ResponseParser.parseBalance(response.body().string()));
-                    token.add(0, new TokenDisplay("Ether", "ETH", ethbal.multiply(new BigDecimal(1000d)), 3, 1, "", "", 0, 0));
-                    balanceDouble = balanceDouble.add(ethbal);
+                    bal = new BigDecimal(ResponseParser.parseBalance(response.body().string()));
+                    token.add(0, new TokenDisplay("Taiji", "SH", bal, 3, 1, "", "", 0, 0));
+                    balanceDouble = balanceDouble.add(bal);
                 } catch (JSONException e) {
                     ac.runOnUiThread(new Runnable() {
                         @Override
@@ -256,7 +258,7 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
             }
         });
 
-        EtherscanAPI.getInstance().getTokenBalances(ethaddress, new Callback() {
+        TaijiAPI.getInstance().getTokenBalances(taijiAddress, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 ac.runOnUiThread(new Runnable() {
@@ -273,7 +275,7 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
                 try {
                     String restring = response.body().string();
                     if (restring != null && restring.length() > 2)
-                        RequestCache.getInstance().put(RequestCache.TYPE_TOKEN, ethaddress, restring);
+                        RequestCache.getInstance().put(RequestCache.TYPE_TOKEN, taijiAddress, restring);
                     token.addAll(ResponseParser.parseTokens(ac, restring, FragmentDetailOverview.this));
 
                     balanceDouble = balanceDouble.add(new BigDecimal(ExchangeCalculator.getInstance().sumUpTokenEther(token)));
@@ -313,7 +315,7 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
             builder.setTitle(R.string.name_this_address);
 
         final EditText input = new EditText(ac);
-        input.setText(AddressNameConverter.getInstance(ac).get(ethaddress));
+        input.setText(AddressNameConverter.getInstance(ac).get(taijiAddress));
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         input.setSingleLine();
         FrameLayout container = new FrameLayout(ac);
@@ -340,7 +342,7 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
             public void onClick(DialogInterface dialog, int which) {
                 InputMethodManager inputMgr = (InputMethodManager) input.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMgr.hideSoftInputFromWindow(input.getWindowToken(), 0);
-                AddressNameConverter.getInstance(ac).put(ethaddress, input.getText().toString(), ac);
+                AddressNameConverter.getInstance(ac).put(taijiAddress, input.getText().toString(), ac);
                 ac.setTitle(input.getText().toString());
 
             }

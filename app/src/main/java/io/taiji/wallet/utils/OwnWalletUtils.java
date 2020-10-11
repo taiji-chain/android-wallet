@@ -2,7 +2,7 @@ package io.taiji.wallet.utils;
 
 import android.util.Log;
 
-import com.networknt.config.JsonMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.taiji.crypto.CipherException;
 import com.networknt.taiji.crypto.ECKeyPair;
 import com.networknt.taiji.crypto.Wallet;
@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.security.KeyPair;
 
 public class OwnWalletUtils extends WalletUtils {
+    private static ObjectMapper objectMapper = new ObjectMapper();
+
     /*
     public static String generateFullNewWalletFile(String password, File destinationDirectory, String chainId)
             throws NoSuchAlgorithmException, NoSuchProviderException,
@@ -40,7 +42,7 @@ public class OwnWalletUtils extends WalletUtils {
         String fileName = getWalletFileName(walletFile);
         Log.i("TAG", "Wallet fileName " + fileName + " in destination " + destinationDirectory.getAbsolutePath());
         File destination = new File(destinationDirectory, fileName);
-        JsonMapper.objectMapper.writeValue(destination, walletFile);
+        objectMapper.writeValue(destination, walletFile);
         return fileName;
     }
 

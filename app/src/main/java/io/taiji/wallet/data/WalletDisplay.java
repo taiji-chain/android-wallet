@@ -60,7 +60,7 @@ public class WalletDisplay implements Comparable {
     }
 
     public String getPublicKey() {
-        return publicKey.toLowerCase();
+        return publicKey;
     }
 
     public void setPublicKey(String publicKey) {

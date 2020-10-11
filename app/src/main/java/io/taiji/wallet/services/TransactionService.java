@@ -4,7 +4,6 @@ import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
@@ -12,10 +11,8 @@ import org.bouncycastle.util.encoders.Hex;
 import org.json.JSONException;
 import org.json.JSONObject;
 import com.networknt.taiji.crypto.Credentials;
-import com.networknt.taiji.crypto.RawTransaction;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import okhttp3.Call;
@@ -23,8 +20,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 import io.taiji.wallet.R;
 import io.taiji.wallet.activities.MainActivity;
-import io.taiji.wallet.network.EtherscanAPI;
-import io.taiji.wallet.utils.ExchangeCalculator;
+import io.taiji.wallet.network.TaijiAPI;
 import io.taiji.wallet.utils.WalletStorage;
 
 public class TransactionService extends IntentService {
@@ -61,7 +57,7 @@ public class TransactionService extends IntentService {
 
             final Credentials keys = WalletStorage.getInstance(getApplicationContext()).getFullWallet(getApplicationContext(), password, fromAddress);
 
-            EtherscanAPI.getInstance().getNonceForAddress(fromAddress, new Callback() {
+            TaijiAPI.getInstance().getNonceForAddress(fromAddress, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     error("Can't connect to network, retry it later");
@@ -111,7 +107,7 @@ public class TransactionService extends IntentService {
     }
 
     private void forwardTX(byte[] signed) throws IOException {
-        EtherscanAPI.getInstance().forwardTransaction("0x" + Hex.toHexString(signed), new Callback() {
+        TaijiAPI.getInstance().forwardTransaction("0x" + Hex.toHexString(signed), new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 error("Can't connect to network, retry it later");

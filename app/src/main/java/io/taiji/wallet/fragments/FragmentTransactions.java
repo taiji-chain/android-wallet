@@ -15,7 +15,7 @@ import okhttp3.Response;
 import io.taiji.wallet.R;
 import io.taiji.wallet.activities.AddressDetailActivity;
 import io.taiji.wallet.data.TransactionDisplay;
-import io.taiji.wallet.network.EtherscanAPI;
+import io.taiji.wallet.network.TaijiAPI;
 import io.taiji.wallet.utils.RequestCache;
 import io.taiji.wallet.utils.ResponseParser;
 
@@ -39,7 +39,7 @@ public class FragmentTransactions extends FragmentTransactionsAbstract {
             swipeLayout.setRefreshing(true);
 
         try {
-            EtherscanAPI.getInstance().getNormalTransactions(address, new Callback() {
+            TaijiAPI.getInstance().getNormalTransactions(address, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     if (isAdded()) {
@@ -69,7 +69,7 @@ public class FragmentTransactions extends FragmentTransactionsAbstract {
                     }
                 }
             }, force);
-            EtherscanAPI.getInstance().getInternalTransactions(address, new Callback() {
+            TaijiAPI.getInstance().getInternalTransactions(address, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     if (isAdded()) {

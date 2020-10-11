@@ -38,7 +38,7 @@ import io.taiji.wallet.BuildConfig;
 import io.taiji.wallet.R;
 import io.taiji.wallet.activities.SendActivity;
 import io.taiji.wallet.interfaces.PasswordDialogCallback;
-import io.taiji.wallet.network.EtherscanAPI;
+import io.taiji.wallet.network.TaijiAPI;
 import io.taiji.wallet.services.TransactionService;
 import io.taiji.wallet.utils.AddressNameConverter;
 import io.taiji.wallet.utils.Blockies;
@@ -259,7 +259,7 @@ public class FragmentSend extends Fragment {
 
     private void updateAccountBalance() {
         try {
-            EtherscanAPI.getInstance().getBalance(spinner.getSelectedItem().toString(), new Callback() {
+            TaijiAPI.getInstance().getBalance(spinner.getSelectedItem().toString(), new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     ac.runOnUiThread(new Runnable() {
@@ -291,8 +291,8 @@ public class FragmentSend extends Fragment {
             e.printStackTrace();
         }
 
-        fromicon.setImageBitmap(Blockies.createIcon(spinner.getSelectedItem().toString().toLowerCase()));
-        fromName.setText(AddressNameConverter.getInstance(ac).get(spinner.getSelectedItem().toString().toLowerCase()));
+        fromicon.setImageBitmap(Blockies.createIcon(spinner.getSelectedItem().toString()));
+        fromName.setText(AddressNameConverter.getInstance(ac).get(spinner.getSelectedItem().toString()));
     }
 
     private void setFromAddress(String from) {
@@ -370,7 +370,7 @@ public class FragmentSend extends Fragment {
 
     private void getEstimatedGasPriceLimit() {
         try {
-            EtherscanAPI.getInstance().getGasLimitEstimate(toAddress.getText().toString(), new Callback() {
+            TaijiAPI.getInstance().getGasLimitEstimate(toAddress.getText().toString(), new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                 }
@@ -420,7 +420,7 @@ public class FragmentSend extends Fragment {
         toAddress.setText(to);
         String name = AddressNameConverter.getInstance(c).get(to);
         toName.setText(name == null ? to.substring(0, 10) : name);
-        toicon.setImageBitmap(Blockies.createIcon(to.toLowerCase()));
+        toicon.setImageBitmap(Blockies.createIcon(to));
         getEstimatedGasPriceLimit();
     }
 }

@@ -11,7 +11,7 @@ public class WatchWallet implements StorableWallet, Serializable {
     private long dateAdded;
 
     public WatchWallet(String pubKey) {
-        this.pubKey = pubKey.toLowerCase();
+        this.pubKey = pubKey;
         this.dateAdded = System.currentTimeMillis();
     }
 

@@ -13,7 +13,7 @@ public class FullWallet implements StorableWallet, Serializable {
     private long dateAdded;
 
     public FullWallet(String pubKey, String path) {
-        this.pubKey = pubKey.toLowerCase();
+        this.pubKey = pubKey;
         this.path = path;
         this.dateAdded = System.currentTimeMillis();
     }

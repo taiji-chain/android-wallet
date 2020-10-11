@@ -90,7 +90,7 @@ class WalletGenActivity : SecureAppCompatActivity() {
     }
     */
 
-    fun startWalletGenRunnerSerivce() {
+    fun startWalletGenRunnerService() {
         val intent = Intent(this, WalletGenRunnerService::class.java)
         intent.putExtra("PASSWORD", passwordConfirm!!.text.toString())
         intent.putExtra("BANK_ID", bankId)
