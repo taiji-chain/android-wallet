@@ -2,10 +2,6 @@ package io.taiji.wallet.data;
 
 import androidx.annotation.NonNull;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import io.taiji.wallet.utils.ExchangeCalculator;
-
 public class WalletDisplay implements Comparable {
 
     public static final byte NORMAL = 0;
@@ -14,10 +10,10 @@ public class WalletDisplay implements Comparable {
 
     private String name;
     private String publicKey;
-    private BigInteger balance;
+    private Long balance;
     private byte type;
 
-    public WalletDisplay(String name, String publicKey, BigInteger balance, byte type) {
+    public WalletDisplay(String name, String publicKey, Long balance, byte type) {
         this.name = name;
         this.publicKey = publicKey;
         this.balance = balance;
@@ -39,16 +35,12 @@ public class WalletDisplay implements Comparable {
         this.type = type;
     }
 
-    public BigInteger getBalanceNative() {
+    public Long getBalance() {
         return balance;
     }
 
-    public void setBalance(BigInteger balance) {
+    public void setBalance(Long balance) {
         this.balance = balance;
-    }
-
-    public double getBalance() {
-        return new BigDecimal(balance).divide(ExchangeCalculator.ONE_ETHER, 8, BigDecimal.ROUND_UP).doubleValue();
     }
 
     public String getName() {

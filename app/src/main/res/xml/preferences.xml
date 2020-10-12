@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <string name="0000e5099B5aa298ea822dc05aB5999f8926677C">100000000000</string>
+    <boolean name="zeroAmountSwitch" value="false" />
+    <boolean name="use_app_lock" value="false" />
+    <string name="sync_frequency">6</string>
+    <int name="displaytype_chart" value="1" />
+    <boolean name="qr_encoding_erc" value="true" />
+    <long name="APP_INSTALLED" value="1602186871791" />
+    <boolean name="startAtWallet" value="false" />
+    <boolean name="notifications_new_message" value="true" />
+    <string name="000152921d0067bfe60734E66C13d4Ec6a80cA7D">0</string>
+    <int name="main_index" value="3" />
+</map>

@@ -139,7 +139,8 @@ public class WalletStorage {
             ExternalStorageHandler.askForPermissionRead(c);
             return;
         }
-        File[] wallets = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Lunary/").listFiles();
+        File[] wallets = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Taiji/").listFiles();
+        Log.i("TAG", "number of files found in Taiji folder " + (wallets == null ? 0 : wallets.length));
         if (wallets == null) {
             Dialogs.noImportWalletsFound(c);
             return;
@@ -147,14 +148,12 @@ public class WalletStorage {
         ArrayList<File> foundImports = new ArrayList<File>();
         for (int i = 0; i < wallets.length; i++) {
             if (wallets[i].isFile()) {
-                if (wallets[i].getName().startsWith("UTC") && wallets[i].getName().length() >= 40) {
-                    foundImports.add(wallets[i]); // Mist naming
-                } else if (wallets[i].getName().length() >= 40) {
+                if (wallets[i].getName().length() >= 40) {
                     int position = wallets[i].getName().indexOf(".json");
                     if (position < 0) continue;
                     String addr = wallets[i].getName().substring(0, position);
-                    if (addr.length() == 40 && !mapdb.contains("0x" + wallets[i].getName())) {
-                        foundImports.add(wallets[i]); // Exported with Lunary
+                    if (addr.length() == 40 && !mapdb.contains(wallets[i].getName())) {
+                        foundImports.add(wallets[i]);
                     }
                 }
             }

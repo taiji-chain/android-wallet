@@ -422,35 +422,30 @@ public class MainActivity extends SecureAppCompatActivity implements NetworkUpda
             }
             case 3: {
                 new AlertDialog.Builder(this)
-                        .setTitle("About Lunary")
-                        .setMessage("Lunary is published under GPL3\n" +
-                                "Developed by Manuel S. C. for Rehanced, 2017\n"
-                                + "www.rehanced.com\n" +
+                        .setTitle("About Taiji")
+                        .setMessage("Taiji is published under GPL3 by\n" +
+                                "Network New Technologies Inc., 2020\n"
+                                + "https://taiji.io\n" +
                                 getString(R.string.translator_name) + "\n" +
                                 "\nCredits:\n" +
                                 "MaterialDrawer by Mike Penz\n" +
                                 "MPAndroidChart by Philipp Jahoda\n" +
-                                "Mobile Vision Barcode Scanner by KingsMentor\n" +
-                                "XZING\n" +
+                                "Mobile Vision Barcode Scanner\n" +
+                                "XZING by Sean Owen\n" +
                                 "FloatingActionButton by Dmytro Tarianyk\n" +
                                 "RateThisApp by Keisuke Kobayashi\n" +
                                 "AppIntro by Maximilian Narr\n" +
                                 "Material Dialogs by Aidan Michael Follestad\n" +
-                                "Poloniex for price data\n" +
-                                "Web3j by Conor Svensson\n" +
+                                "Lunary Wallet by Manuel S. C.\n" +
                                 "PatternLock by Zhang Hai\n" +
-                                "Ethereum Foundation for usage of the icon according to (CC A 3.0)\n" +
-                                "Powered by Etherscan.io APIs\n" +
-                                "Token balances powered by Ethplorer.io\n\n" +
-                                "Lunary is published under GPL3\n" +
-                                "This app is not associated with Ethereum or the Ethereum Foundation in any way. Lunary is an independend wallet app.")
+                                "This app is the official Android Wallet for Taiji Blockchain.")
                         .setIcon(android.R.drawable.ic_dialog_info)
                         .show();
                 break;
             }
             case 4: {
                 Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse("https://www.reddit.com/r/lunary"));
+                i.setData(Uri.parse("https://www.reddit.com/r/TaijiChain/"));
                 startActivity(i);
                 break;
             }

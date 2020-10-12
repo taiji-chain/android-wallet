@@ -41,7 +41,6 @@ import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.material.appbar.AppBarLayout;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +50,7 @@ import io.taiji.wallet.activities.MainActivity;
 import io.taiji.wallet.activities.PrivateKeyActivity;
 import io.taiji.wallet.activities.QRScanActivity;
 import io.taiji.wallet.activities.WalletGenActivity;
-import io.taiji.wallet.data.CurrencyEntry;
+import io.taiji.wallet.data.UnitEntry;
 import io.taiji.wallet.data.WalletDisplay;
 import io.taiji.wallet.interfaces.PasswordDialogCallback;
 import io.taiji.wallet.interfaces.StorableWallet;
@@ -59,9 +58,9 @@ import io.taiji.wallet.network.TaijiAPI;
 import io.taiji.wallet.utils.AddressNameConverter;
 import io.taiji.wallet.utils.AppBarStateChangeListener;
 import io.taiji.wallet.utils.Dialogs;
-import io.taiji.wallet.utils.ExchangeCalculator;
 import io.taiji.wallet.utils.ResponseParser;
 import io.taiji.wallet.utils.Settings;
+import io.taiji.wallet.utils.UnitCalculator;
 import io.taiji.wallet.utils.WalletAdapter;
 import io.taiji.wallet.utils.WalletStorage;
 import okhttp3.Call;
@@ -79,7 +78,7 @@ public abstract class FragmentWalletsAbstract extends Fragment implements View.O
     protected WalletAdapter walletAdapter;
     protected List<WalletDisplay> wallets = new ArrayList<>();
     protected MainActivity ac;
-    double balance = 0;
+    long balance = 0L;
     protected TextView balanceView;
     protected SwipeRefreshLayout swipeLayout;
     protected FrameLayout nothingToShow;
@@ -116,17 +115,17 @@ public abstract class FragmentWalletsAbstract extends Fragment implements View.O
             }
         });
 
-        ExchangeCalculator.getInstance().setIndex(ac.getPreferences().getInt("main_index", 0));
-
+        UnitCalculator.getInstance().setIndex(ac.getPreferences().getInt("main_index", 3));
+        Log.i("TAG", "main_index" + UnitCalculator.getInstance().getIndex());
         leftPress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CurrencyEntry cur = ExchangeCalculator.getInstance().previous();
-                balanceView.setText(ExchangeCalculator.getInstance().displayBalanceNicely(ExchangeCalculator.getInstance().convertRate(balance, cur.getRate())) + " " + cur.getName());
+                UnitEntry unitEntry = UnitCalculator.getInstance().previous();
+                balanceView.setText(UnitCalculator.getInstance().displayBalanceNicely(UnitCalculator.getInstance().convertUnit(balance, unitEntry.getUnit())) + " " + unitEntry.getName());
                 ac.broadCastDataSetChanged();
                 walletAdapter.notifyDataSetChanged();
                 SharedPreferences.Editor editor = ac.getPreferences().edit();
-                editor.putInt("main_index", ExchangeCalculator.getInstance().getIndex());
+                editor.putInt("main_index", UnitCalculator.getInstance().getIndex());
                 editor.apply();
             }
         });
@@ -134,12 +133,12 @@ public abstract class FragmentWalletsAbstract extends Fragment implements View.O
         rightPress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CurrencyEntry cur = ExchangeCalculator.getInstance().next();
-                balanceView.setText(ExchangeCalculator.getInstance().displayBalanceNicely(ExchangeCalculator.getInstance().convertRate(balance, cur.getRate())) + " " + cur.getName());
+                UnitEntry unitEntry = UnitCalculator.getInstance().next();
+                balanceView.setText(UnitCalculator.getInstance().displayBalanceNicely(UnitCalculator.getInstance().convertUnit(balance, unitEntry.getUnit())) + " " + unitEntry.getName());
                 ac.broadCastDataSetChanged();
                 walletAdapter.notifyDataSetChanged();
                 SharedPreferences.Editor editor = ac.getPreferences().edit();
-                editor.putInt("main_index", ExchangeCalculator.getInstance().getIndex());
+                editor.putInt("main_index", UnitCalculator.getInstance().getIndex());
                 editor.apply();
             }
         });
@@ -211,7 +210,7 @@ public abstract class FragmentWalletsAbstract extends Fragment implements View.O
     public void update() throws IOException {
         if (ac == null) return;
         wallets.clear();
-        balance = 0;
+        balance = 0L;
         final ArrayList<StorableWallet> storedwallets = new ArrayList<StorableWallet>(WalletStorage.getInstance(ac).get());
 
         if (storedwallets.size() == 0) {
@@ -227,7 +226,7 @@ public abstract class FragmentWalletsAbstract extends Fragment implements View.O
                         ac.snackError("Can't fetch account balances. Invalid response.");
                     final List<WalletDisplay> w = new ArrayList<WalletDisplay>();
                     for (StorableWallet cur : storedwallets)
-                        w.add(new WalletDisplay(AddressNameConverter.getInstance(ac).get(cur.getPubKey()), cur.getPubKey(), new BigInteger("-1"), WalletDisplay.NORMAL));
+                        w.add(new WalletDisplay(AddressNameConverter.getInstance(ac).get(cur.getPubKey()), cur.getPubKey(), new Long("-1"), WalletDisplay.NORMAL));
 
                     ac.runOnUiThread(new Runnable() {
                         @Override
@@ -257,7 +256,7 @@ public abstract class FragmentWalletsAbstract extends Fragment implements View.O
                             for (int i = 0; i < wallets.size(); i++) {
                                 balance += wallets.get(i).getBalance();
                             }
-                            balanceView.setText(ExchangeCalculator.getInstance().displayBalanceNicely(ExchangeCalculator.getInstance().convertRate(balance, ExchangeCalculator.getInstance().getCurrent().getRate())) + " " + ExchangeCalculator.getInstance().getCurrent().getName());
+                            balanceView.setText(UnitCalculator.getInstance().displayBalanceNicely(UnitCalculator.getInstance().convertUnit(balance, UnitCalculator.getInstance().getCurrent().getUnit())) + " " + UnitCalculator.getInstance().getCurrent().getName());
                             onItemsLoadComplete();
                         }
                     });
@@ -521,7 +520,7 @@ public abstract class FragmentWalletsAbstract extends Fragment implements View.O
 
     public void updateBalanceText() {
         if (balanceView != null)
-            balanceView.setText(ExchangeCalculator.getInstance().displayBalanceNicely(ExchangeCalculator.getInstance().convertRate(balance, ExchangeCalculator.getInstance().getCurrent().getRate())) + " " + ExchangeCalculator.getInstance().getCurrent().getName());
+            balanceView.setText(UnitCalculator.getInstance().displayBalanceNicely(UnitCalculator.getInstance().convertUnit(balance, UnitCalculator.getInstance().getCurrent().getUnit())) + " " + UnitCalculator.getInstance().getCurrent().getName());
     }
 
     public int getDisplayedWalletCount() {

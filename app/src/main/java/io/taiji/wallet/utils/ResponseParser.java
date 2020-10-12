@@ -69,7 +69,7 @@ public class ResponseParser {
         ArrayList<WalletDisplay> display = new ArrayList<WalletDisplay>();
         JSONArray data = new JSONArray(response);
         for (int i = 0; i < storedwallets.size(); i++) {
-            BigInteger balance = new BigInteger("0");
+            Long balance = new Long("0");
             for (int j = 0; j < data.length(); j++) {
                 JSONObject addressMap = data.getJSONObject(j);
                 Iterator<String> keys = addressMap.keys();
@@ -78,7 +78,7 @@ public class ResponseParser {
                 if (address.equalsIgnoreCase(storedwallets.get(i).getPubKey())) {
                     JSONObject currencyMap = (JSONObject)addressMap.get(address);
                     Log.i("TAG", "balance = " + currencyMap.getString("taiji"));
-                    balance = new BigInteger(currencyMap.getString("taiji"));
+                    balance = new Long(currencyMap.getString("taiji"));
                     break;
                 }
             }
