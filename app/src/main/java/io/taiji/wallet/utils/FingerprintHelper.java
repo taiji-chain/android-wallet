@@ -3,7 +3,6 @@ package io.taiji.wallet.utils;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.os.CancellationSignal;
-
 import androidx.annotation.RequiresApi;
 
 import io.taiji.wallet.interfaces.FingerprintListener;

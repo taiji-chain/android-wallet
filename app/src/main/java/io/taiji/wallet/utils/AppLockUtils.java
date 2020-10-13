@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
-
 import androidx.core.app.ActivityCompat;
 
 public class AppLockUtils {

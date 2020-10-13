@@ -2,7 +2,6 @@ package io.taiji.wallet.activities;
 
 
 import android.content.Intent;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 /**

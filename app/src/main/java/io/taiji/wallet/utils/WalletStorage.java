@@ -203,11 +203,8 @@ public class WalletStorage {
 
     private boolean exportWallet(Activity c, boolean already) {
         if (walletToExport == null) return false;
-        if (walletToExport.startsWith("0x"))
-            walletToExport = walletToExport.substring(2);
-
         if (ExternalStorageHandler.hasPermission(c)) {
-            File folder = new File(Environment.getExternalStorageDirectory(), "Lunary");
+            File folder = new File(Environment.getExternalStorageDirectory(), "Taiji");
             if (!folder.exists()) folder.mkdirs();
 
             File storeFile = new File(folder, walletToExport + ".json");
@@ -246,8 +243,6 @@ public class WalletStorage {
     }
 
     public Credentials getFullWallet(Context context, String password, String wallet) throws IOException, JSONException, CipherException, NoSuchAlgorithmException, InvalidKeySpecException {
-        if (wallet.startsWith("0x"))
-            wallet = wallet.substring(2, wallet.length());
         return WalletUtils.loadCredentials(password, new File(context.getFilesDir(), wallet));
     }
 

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
-
 import androidx.core.app.ActivityCompat;
 
 public class ExternalStorageHandler {

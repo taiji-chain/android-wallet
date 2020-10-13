@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="translator_name"></string>
 
     <string name="app_name">Taiji</string>
@@ -183,7 +183,7 @@
     <string name="dialog_ex_nofull_title">No Full Wallet</string>
     <string name="dialog_ex_nofull_text">Watch only wallets can not be exported.</string>
     <string name="dialog_exporting_title">Exporting your Wallet</string>
-    <string name="dialog_exporting_text">A copy of your Ethereum wallet will be placed inside the folder \"Lunary\" in the root directory of your Android phone. Please note that other applications that run on your device can technically access any wallets that you have exported. Due to this, we highly recommend erasing all exported wallets from the Lunary folder as soon as you have finished backing them up.</string>
+    <string name="dialog_exporting_text">A copy of your Taiji wallet will be placed inside the folder \"Taiji\" in the root directory of your Android phone. Please note that other applications that run on your device can technically access any wallets that you have exported. Due to this, we highly recommend erasing all exported wallets from the Taiji folder as soon as you have finished backing them up.</string>
     <string name="dialog_nofullwallet">No Full Wallet</string>
     <string name="dialog_nofullwallet_text">In order to send funds you need a full wallet with a private key. Please generate or import one first.</string>
     <string name="dialog_no_wallets">No Wallets</string>
