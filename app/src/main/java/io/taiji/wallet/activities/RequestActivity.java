@@ -52,8 +52,9 @@ public class RequestActivity extends SecureAppCompatActivity implements View.OnC
     private RecyclerView recyclerView;
     private WalletAdapter walletAdapter;
     private List<WalletDisplay> wallets = new ArrayList<>();
-    private String selectedEtherAddress;
+    private String selectedTaijiAddress;
     private TextView amount;
+    private TextView taijiRequested;
     private Spinner currencySpinner;
     private Long curAmount = 0L; // in shell
     private Converter.Unit unit;
@@ -72,6 +73,8 @@ public class RequestActivity extends SecureAppCompatActivity implements View.OnC
         qr = (ImageView) findViewById(qrcode);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         amount = (TextView) findViewById(R.id.amount);
+        taijiRequested = (TextView) findViewById(R.id.taijiRequested);
+
         walletAdapter = new WalletAdapter(wallets, this, this, this);
         LinearLayoutManager mgr = new LinearLayoutManager(this.getApplicationContext());
         RecyclerView.LayoutManager mLayoutManager = mgr;
@@ -116,10 +119,7 @@ public class RequestActivity extends SecureAppCompatActivity implements View.OnC
         currencySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.i("TAG", "i = " + i + " l = " + l);
-                Log.i("TAG", "unit name = " + unitList.get(i));
                 unit = Converter.Unit.fromString(unitList.get(i));
-                Log.i("TAG", "unit = " + unit.toString());
                 updateAmount(amount.getText().toString());
                 update();
                 updateQR();
@@ -140,7 +140,7 @@ public class RequestActivity extends SecureAppCompatActivity implements View.OnC
         ArrayList<WalletDisplay> myAddresses = new ArrayList<WalletDisplay>();
         ArrayList<StorableWallet> storedAddresses = new ArrayList<StorableWallet>(WalletStorage.getInstance(this).get());
         for (int i = 0; i < storedAddresses.size(); i++) {
-            if (i == 0) selectedEtherAddress = storedAddresses.get(i).getPubKey();
+            if (i == 0) selectedTaijiAddress = storedAddresses.get(i).getPubKey();
             myAddresses.add(new WalletDisplay(
                     AddressNameConverter.getInstance(this).get(storedAddresses.get(i).getPubKey()),
                     storedAddresses.get(i).getPubKey()
@@ -159,7 +159,7 @@ public class RequestActivity extends SecureAppCompatActivity implements View.OnC
 
     public void updateQR() {
         int qrCodeDimention = 400;
-        String iban = "iban:" + selectedEtherAddress;
+        String iban = "iban:" + selectedTaijiAddress;
         if (curAmount > 0) {
             iban += "?amount=" + curAmount;
         }
@@ -167,7 +167,7 @@ public class RequestActivity extends SecureAppCompatActivity implements View.OnC
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         QREncoder qrCodeEncoder;
         if (prefs.getBoolean("qr_encoding_erc", true)) {
-            AddressEncoder temp = new AddressEncoder(selectedEtherAddress);
+            AddressEncoder temp = new AddressEncoder(selectedTaijiAddress);
             if (curAmount > 0)
                 temp.setAmount(curAmount.toString());
             qrCodeEncoder = new QREncoder(AddressEncoder.encodeERC(temp), null,
@@ -191,6 +191,7 @@ public class RequestActivity extends SecureAppCompatActivity implements View.OnC
         } catch (NumberFormatException e) {
             curAmount = 0L;
         }
+        taijiRequested.setText(curAmount.toString());
     }
 
     @Override
@@ -202,7 +203,7 @@ public class RequestActivity extends SecureAppCompatActivity implements View.OnC
     @Override
     public void onClick(View view) {
         int itemPosition = recyclerView.getChildLayoutPosition(view);
-        selectedEtherAddress = wallets.get(itemPosition).getPublicKey();
+        selectedTaijiAddress = wallets.get(itemPosition).getPublicKey();
         updateQR();
     }
 }

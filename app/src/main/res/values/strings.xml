@@ -112,7 +112,7 @@
     <string name="choose_fee">Transaction Cost</string>
 
 
-    <string name="request_activity_taiji">Request Amount</string>
+    <string name="request_taiji">Request Amount</string>
     <string name="request_activity_to">Your Wallets / Addresses</string>
 
     <string name="no_tx_history">This is the transaction overview showing all currencies sent and received to and from other people. After adding a wallet and transferring some Taiji to it, the transaction and all future transactions will be displayed here.</string>
@@ -253,5 +253,6 @@
     <string name="activity_private_key_title">Private Key</string>
     <string name="activity_private_key_explanation">This is the unencrypted private key of your wallet. Anyone with access to this key or QR code can spend your funds like ether and tokens. Dont store this unencrypted!</string>
     <string name="activity_private_key_wrong_pw">Your password is not correct - cant decrypt private key!</string>
+    <string name="rqcode_image">rqcode image</string>
 
 </resources>
