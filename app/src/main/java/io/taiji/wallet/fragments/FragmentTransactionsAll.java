@@ -1,6 +1,7 @@
 package io.taiji.wallet.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,9 @@ import io.taiji.wallet.utils.WalletStorage;
 
 import static android.view.View.GONE;
 
-
+/**
+ * This is the fragment for the third tab on the initial screen.
+ */
 public class FragmentTransactionsAll extends FragmentTransactionsAbstract {
 
     protected TransactionDisplay unconfirmed;
@@ -54,8 +57,7 @@ public class FragmentTransactionsAll extends FragmentTransactionsAbstract {
         getWallets().clear();
         if (swipeLayout != null)
             swipeLayout.setRefreshing(true);
-        resetRequestCount();
-        final ArrayList<StorableWallet> storedwallets = new ArrayList<StorableWallet>(WalletStorage.getInstance(ac).get());
+        final ArrayList<StorableWallet> storedwallets = new ArrayList<>(WalletStorage.getInstance(ac).get());
         if (storedwallets.size() == 0) {
             nothingToShow.setVisibility(View.VISIBLE);
             onItemsLoadComplete();
@@ -98,9 +100,6 @@ public class FragmentTransactionsAll extends FragmentTransactionsAbstract {
                     if (isAdded()) {
                         if (ac != null)
                             ((MainActivity) ac).snackError("Can't fetch account balances. No connection?");
-
-                        // So "if(getRequestCount() >= storedwallets.size()*2)" limit can be reached even if there are expetions for certain addresses (2x because of internal and normal)
-                        addRequestCount();
                         onItemsLoadComplete();
                         e.printStackTrace();
                     }
@@ -112,19 +111,8 @@ public class FragmentTransactionsAll extends FragmentTransactionsAbstract {
 
     private void onComplete(ArrayList<TransactionDisplay> w, ArrayList<StorableWallet> storedwallets) {
         addToWallets(w);
-        addRequestCount();
-        if (getRequestCount() >= storedwallets.size() * 2) {
-            onItemsLoadComplete();
-            if (unconfirmed != null && wallets.size() > 0) {
-                if (wallets.get(0).getAmount() == unconfirmed.getAmount()) {
-                    unconfirmed = null;
-                } else {
-                    wallets.add(0, unconfirmed);
-                }
-            }
-
-            nothingToShow.setVisibility(wallets.size() == 0 ? View.VISIBLE : GONE);
-            walletAdapter.notifyDataSetChanged();
-        }
+        onItemsLoadComplete();
+        nothingToShow.setVisibility(wallets.size() == 0 ? View.VISIBLE : GONE);
+        walletAdapter.notifyDataSetChanged();
     }
 }

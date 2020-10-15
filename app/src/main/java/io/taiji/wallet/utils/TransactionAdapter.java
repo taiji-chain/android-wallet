@@ -1,6 +1,7 @@
 package io.taiji.wallet.utils;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,21 +33,15 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private int position;
 
     private static final int CONTENT = 0;
-    private static final int AD = 1;
-    private static final int LIST_AD_DELTA = 9;
 
     @Override
     public int getItemViewType(int position) {
-        if(!Settings.displayAds) return CONTENT;
-        if (position % LIST_AD_DELTA == 0) {
-            return AD;
-        }
         return CONTENT;
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         TextView month, walletbalance, walletname, other_address, plusminus;
-        ImageView my_addressicon, other_addressicon, type, error;
+        ImageView my_addressicon, other_addressicon, type;
         private LinearLayout container;
 
         MyViewHolder(View view) {
@@ -60,7 +55,6 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             my_addressicon = (ImageView) view.findViewById(R.id.my_addressicon);
             other_addressicon = (ImageView) view.findViewById(R.id.other_addressicon);
             type = (ImageView) view.findViewById(R.id.type);
-            error = (ImageView) view.findViewById(R.id.error);
             container = (LinearLayout) view.findViewById(R.id.container);
         }
 
@@ -71,6 +65,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
 
     public TransactionAdapter(List<TransactionDisplay> boxlist, Context context, View.OnClickListener clickListener, View.OnCreateContextMenuListener listener) {
+        Log.i("TAG", "boxlist = " +boxlist.size());
         this.boxlist = boxlist;
         this.context = context;
         this.contextMenuListener = listener;
@@ -87,9 +82,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public static int calculateBoxPosition(int position){
-        if(!Settings.displayAds) return position;
-        if(position < LIST_AD_DELTA) return position - 1;
-        return position - (position / LIST_AD_DELTA) - 1;
+        return position;
     }
 
     @Override
@@ -97,7 +90,6 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (getItemViewType(position) == CONTENT) {
             MyViewHolder holder = (MyViewHolder) holder_;
             TransactionDisplay box = boxlist.get(calculateBoxPosition(position));
-
             holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
@@ -156,11 +148,6 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemCount() {
-        if(!Settings.displayAds) return boxlist.size();
-        int additionalContent = 1;
-        if (boxlist.size() > 0 && boxlist.size() >= LIST_AD_DELTA) {
-            additionalContent += (boxlist.size() / (LIST_AD_DELTA-1));
-        }
-        return boxlist.size() + additionalContent;
+        return boxlist.size();
     }
 }

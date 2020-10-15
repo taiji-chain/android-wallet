@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -54,7 +55,6 @@ public abstract class FragmentTransactionsAbstract extends Fragment implements V
     protected Activity ac;
     protected String address;
     protected SwipeRefreshLayout swipeLayout;
-    protected int requestCount = 0;  // used to count to two (since internal and normal transactions are each one request). Gets icnreased once one request is finished. If it is two, notifyDataChange is called (display transactions)
     protected FloatingActionButton requestTx;
     protected FloatingActionButton send;
     protected FrameLayout nothingToShow;
@@ -152,18 +152,6 @@ public abstract class FragmentTransactionsAbstract extends Fragment implements V
 
     public abstract void update(boolean force);
 
-    public synchronized void addRequestCount() {
-        requestCount++;
-    }
-
-    public synchronized int getRequestCount() {
-        return requestCount;
-    }
-
-    public synchronized void resetRequestCount() {
-        requestCount = 0;
-    }
-
     void onItemsLoadComplete() {
         if (swipeLayout == null) return;
         swipeLayout.setRefreshing(false);
@@ -196,6 +184,7 @@ public abstract class FragmentTransactionsAbstract extends Fragment implements V
         int position = -1;
         try {
             position = TransactionAdapter.calculateBoxPosition(walletAdapter.getPosition());
+
         } catch (Exception e) {
             e.printStackTrace();
             return super.onContextItemSelected(item);
@@ -284,6 +273,7 @@ public abstract class FragmentTransactionsAbstract extends Fragment implements V
     public void onClick(View view) {
         if (ac == null) return;
         int itemPosition = TransactionAdapter.calculateBoxPosition(recyclerView.getChildLayoutPosition(view));
+        Log.i("TAG", "itemPosition" + itemPosition + " wallets size " + wallets.size());
         if (itemPosition >= wallets.size()) return;
         Dialogs.showTXDetails(ac, wallets.get(itemPosition));
     }
