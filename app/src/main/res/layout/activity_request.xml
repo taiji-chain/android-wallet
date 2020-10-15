@@ -27,7 +27,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/request_ether_title"
+                android:text="@string/request_taiji_title"
                 android:layout_marginTop="0dp"
                 android:fontFamily="sans-serif-light"
                 android:textSize="23sp"
@@ -65,13 +65,56 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="10dp">
 
-                <TextView
-                    android:text="@string/request_activity_ether"
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:layout_width="331dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp" />
+                    android:layout_marginTop="15dp"
+                    android:layout_marginRight="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginRight="10dp"
+                        android:text="@string/request_activity_taiji" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="left"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/requestAmount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="3dp"
+                                android:gravity="right"
+                                android:text="0"
+                                android:textColor="@color/colorPrimaryDark"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="right"
+                                android:text="SH"
+                                android:textColor="@color/colorPrimaryDark"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
@@ -80,28 +123,38 @@
                     android:layout_marginBottom="5dp"
                     android:background="#7aa1a1a1" />
 
-                <EditText
-                    android:id="@+id/amount"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Ether Amount"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_weight="1"
-                    android:inputType="numberDecimal"
-                    android:maxLines="1" />
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/usdPrice"
-                    android:text="0.00 USD"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
-                    android:textSize="13sp"
-                    android:gravity="left"
-                    android:layout_marginLeft="14dp"
-                    android:layout_marginRight="14dp" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="10dp"
+                        android:orientation="vertical">
 
+                        <EditText
+                            android:id="@+id/amount"
+                            android:layout_width="270dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_weight="1"
+                            android:hint="Taiji Amount"
+                            android:inputType="numberDecimal"
+                            android:maxLines="1" />
+                    </LinearLayout>
+
+                    <Spinner
+                        android:id="@+id/currency_spinner"
+                        android:layout_width="100dp"
+                        android:layout_height="37dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginBottom="4dp"
+                        android:dropDownWidth="match_parent" />
+                </LinearLayout>
             </LinearLayout>
 
             <TextView

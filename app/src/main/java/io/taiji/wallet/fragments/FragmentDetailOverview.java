@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.taiji.wallet.activities.AddressDetailActivity;
+import io.taiji.wallet.data.UnitEntry;
+import io.taiji.wallet.utils.UnitCalculator;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -66,7 +68,7 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
     private TextView balance, address, currency;
     private ImageView icon;
     private LinearLayout header;
-    BigDecimal balanceDouble = new BigDecimal("0");
+    private long balanceLong = 0L;
     private FloatingActionMenu fabmenu;
     private RecyclerView recyclerView;
     private TokenAdapter walletAdapter;
@@ -88,10 +90,10 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
         header = (LinearLayout) rootView.findViewById(R.id.header);
         fabmenu = (FloatingActionMenu) rootView.findViewById(R.id.fabmenu);
 
-        CurrencyEntry cur = ExchangeCalculator.getInstance().getCurrent();
-        balanceDouble = new BigDecimal(getArguments().getDouble("BALANCE"));
-        balance.setText(ExchangeCalculator.getInstance().convertRateExact(balanceDouble, cur.getRate()) + "");
-        currency.setText(cur.getName());
+        UnitEntry unitEntry = UnitCalculator.getInstance().getCurrent();
+        balanceLong = getArguments().getLong("BALANCE");
+        balance.setText(UnitCalculator.getInstance().convertUnit(balanceLong, unitEntry.getUnit()) + "");
+        currency.setText(unitEntry.getName());
 
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         walletAdapter = new TokenAdapter(token, ac, this, this);
@@ -121,8 +123,8 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
         header.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CurrencyEntry cur = ExchangeCalculator.getInstance().next();
-                balance.setText(ExchangeCalculator.getInstance().convertRateExact(balanceDouble, cur.getRate()) + "");
+                UnitEntry cur = UnitCalculator.getInstance().next();
+                balance.setText(UnitCalculator.getInstance().convertUnit(balanceLong, cur.getUnit()) + "");
                 currency.setText(cur.getName());
                 walletAdapter.notifyDataSetChanged();
                 if (ac != null)
@@ -212,10 +214,9 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
         return rootView;
     }
 
-
     public void update(boolean force) throws IOException {
         token.clear();
-        balanceDouble = new BigDecimal("0");
+        balanceLong = new Long("0");
         TaijiAPI.getInstance().getBalance(taijiAddress, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -231,11 +232,10 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 Log.i("TAG", "response = " + response);
-                BigDecimal bal;
+                long bal;
                 try {
-                    bal = new BigDecimal(ResponseParser.parseBalance(response.body().string()));
-                    token.add(0, new TokenDisplay("Taiji", "SH", bal, 3, 1, "", "", 0, 0));
-                    balanceDouble = balanceDouble.add(bal);
+                    bal = new Long(ResponseParser.parseBalance(response.body().string()));
+                    balanceLong = bal;
                 } catch (JSONException e) {
                     ac.runOnUiThread(new Runnable() {
                         @Override
@@ -245,19 +245,17 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
                     });
                     e.printStackTrace();
                 }
-                final CurrencyEntry cur = ExchangeCalculator.getInstance().getCurrent();
+                final UnitEntry unitEntry = UnitCalculator.getInstance().getCurrent();
                 ac.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        // balance.setText(ExchangeCalculator.getInstance().convertRateExact(balanceDouble, ExchangeCalculator.getInstance().get));
-                        balance.setText(ExchangeCalculator.getInstance().convertRateExact(balanceDouble, cur.getRate()) + "");
-                        currency.setText(cur.getName());
+                        balance.setText(UnitCalculator.getInstance().convertUnit(balanceLong, unitEntry.getUnit()) + "");
+                        currency.setText(unitEntry.getName());
                         walletAdapter.notifyDataSetChanged();
                     }
                 });
             }
         });
-
         TaijiAPI.getInstance().getTokenBalances(taijiAddress, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -275,17 +273,11 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
                 try {
                     String restring = response.body().string();
                     if (restring != null && restring.length() > 2)
-                        RequestCache.getInstance().put(RequestCache.TYPE_TOKEN, taijiAddress, restring);
+                        RequestCache.getInstance().put(RequestCache.TYPE_TOKENS, taijiAddress, restring);
                     token.addAll(ResponseParser.parseTokens(ac, restring, FragmentDetailOverview.this));
-
-                    balanceDouble = balanceDouble.add(new BigDecimal(ExchangeCalculator.getInstance().sumUpTokenEther(token)));
-
-                    final CurrencyEntry cur = ExchangeCalculator.getInstance().getCurrent();
                     ac.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            balance.setText(ExchangeCalculator.getInstance().convertRateExact(balanceDouble, cur.getRate()) + "");
-                            currency.setText(cur.getName());
                             walletAdapter.notifyDataSetChanged();
                             onItemsLoadComplete();
                         }
@@ -369,7 +361,7 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
         if (ac == null) return;
         int itemPosition = recyclerView.getChildLayoutPosition(view);
         if (itemPosition == 0 || itemPosition >= token.size()) return;  // if clicked on Ether
-        Dialogs.showTokenetails(ac, token.get(itemPosition));
+        //Dialogs.showTokenetails(ac, token.get(itemPosition));
     }
 
     @Override

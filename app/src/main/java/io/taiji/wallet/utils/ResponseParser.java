@@ -12,6 +12,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import io.taiji.wallet.data.BankFee;
 import io.taiji.wallet.data.TokenDisplay;
 import io.taiji.wallet.data.TransactionDisplay;
 import io.taiji.wallet.data.WalletDisplay;
@@ -23,45 +24,52 @@ import io.taiji.wallet.network.TaijiAPI;
 
 public class ResponseParser {
 
-    public static ArrayList<TransactionDisplay> parseTransactions(String response, String walletname, String address, byte type) {
+    public static ArrayList<TransactionDisplay> parseTransactions(String response, String walletname, String address) {
+        Log.i("TAG", "transactions = " + response);
+        /*
+        [
+            {
+                "no": 1,
+                    "ty": "C",
+                    "id": 44,
+                    "to": "0000Ff14aD21d03D20b7eE96d031552cf9dD9072",
+                    "va": 223299999999998000,
+                    "fr": "0000579E347641dEb923ff0C30CADef40F1488a2",
+                    "da": "",
+                    "ts": 1602691085481
+            }
+        ]
+        */
         try {
             ArrayList<TransactionDisplay> erg = new ArrayList<TransactionDisplay>();
-
-            JSONArray data = new JSONObject(response).getJSONArray("result");
+            JSONArray data = new JSONArray(response);
             for (int i = 0; i < data.length(); i++) {
-                String from = data.getJSONObject(i).getString("from");
+                String fr = data.getJSONObject(i).getString("fr");
                 String to = data.getJSONObject(i).getString("to");
-                String vorzeichen = "+";
-                if (address.equalsIgnoreCase(data.getJSONObject(i).getString("from"))) {
-                    vorzeichen = "-";
-                } else {
-                    String temp = from;
-                    from = to;
+                String ty = data.getJSONObject(i).getString("ty");
+                if("C".equals(ty)) {
+                    ty = "+";
+                    String temp = fr;
+                    fr = to;
                     to = temp;
+                } else {
+                    ty = "-";
                 }
-                if (data.getJSONObject(i).getString("value").equals("0") && !Settings.showTransactionsWithZero)
-                    continue; // Skip contract calls or empty transactions
                 erg.add(new TransactionDisplay(
-                        from,
+                        fr,
                         to,
-                        new BigInteger(vorzeichen + data.getJSONObject(i).getString("value")),
-                        data.getJSONObject(i).has("confirmations") ? data.getJSONObject(i).getInt("confirmations") : 13,
-                        data.getJSONObject(i).getLong("timeStamp") * 1000,
-                        walletname,
-                        type,
-                        data.getJSONObject(i).getString("hash"),
-                        data.getJSONObject(i).has("nonce") ? data.getJSONObject(i).getString("nonce") : "0",
-                        data.getJSONObject(i).getLong("blockNumber"),
-                        data.getJSONObject(i).getInt("gasUsed"),
-                        (data.getJSONObject(i).has("gasPrice") ? data.getJSONObject(i).getLong("gasPrice") : 0),
-                        (data.getJSONObject(i).has("isError") && data.getJSONObject(i).getInt("isError") == 1)
+                        data.getJSONObject(i).getLong("va"),
+                        data.getJSONObject(i).getString("da").isEmpty() ? false : true,
+                        ty,
+                        data.getJSONObject(i).getString("id"),
+                        data.getJSONObject(i).getLong("ts"),
+                        walletname
                 ));
             }
-
-
+            Log.i("TAG", "erg size = " + erg.size());
             return erg;
         } catch (JSONException e) {
-            return new ArrayList<TransactionDisplay>();
+            return new ArrayList<>();
         }
     }
 
@@ -99,7 +107,9 @@ public class ResponseParser {
         JSONArray data = new JSONObject(response).getJSONArray("tokens");
         for (int i = 0; i < data.length(); i++) {
             JSONObject currentToken = data.getJSONObject(i);
+            /*
             try {
+
                 display.add(new TokenDisplay(
                         currentToken.getJSONObject("tokenInfo").getString("name"),
                         currentToken.getJSONObject("tokenInfo").getString("symbol"),
@@ -114,7 +124,7 @@ public class ResponseParser {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
+            */
             // Download icon and cache it
             TaijiAPI.getInstance().loadTokenIcon(c, currentToken.getJSONObject("tokenInfo").getString("name"), i == data.length() - 1, callback);
 
@@ -123,20 +133,16 @@ public class ResponseParser {
     }
 
     public static String parseBalance(String response) throws JSONException {
-        return parseBalance(response, 7);
-    }
-
-    public static String parseBalance(String response, int comma) throws JSONException {
         Log.i("TAG", "response = " + response);
         String balance = new JSONObject(response).getString("taiji");
         Log.i("balance = ", balance);
         if (balance.equals("0")) return "0";
-        return new BigDecimal(balance).toPlainString();
+        return balance;
     }
 
-    public static BigInteger parseGasPrice(String response) throws Exception {
-        String gasprice = new JSONObject(response).getString("result");
-        return new BigInteger(gasprice.substring(2), 16);
+    public static BankFee parseBankFee(String response) throws Exception {
+        JSONObject obj = new JSONObject(response);
+        return new BankFee(obj.getInt("interChain"), obj.getInt("innerChain"), obj.getInt("application"), obj.getString("bankAddress"));
     }
 
     // Only call for each address, not the combined one

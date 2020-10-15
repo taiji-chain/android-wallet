@@ -37,7 +37,7 @@ import java.security.Security;
 import okhttp3.Response;
 import io.taiji.wallet.R;
 import io.taiji.wallet.data.WatchWallet;
-import io.taiji.wallet.fragments.FragmentPrice;
+import io.taiji.wallet.fragments.FragmentApplications;
 import io.taiji.wallet.fragments.FragmentTransactionsAll;
 import io.taiji.wallet.fragments.FragmentWallets;
 import io.taiji.wallet.interfaces.NetworkUpdateListener;
@@ -134,7 +134,7 @@ public class MainActivity extends SecureAppCompatActivity implements NetworkUpda
         appbar = (AppBarLayout) findViewById(R.id.appbar);
 
         fragments = new Fragment[3];
-        fragments[0] = new FragmentPrice();
+        fragments[0] = new FragmentApplications();
         fragments[1] = new FragmentWallets();
         fragments[2] = new FragmentTransactionsAll();
 
@@ -150,12 +150,6 @@ public class MainActivity extends SecureAppCompatActivity implements NetworkUpda
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_price);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_wallet);
         tabLayout.getTabAt(2).setIcon(R.drawable.ic_transactions);
-
-        try {
-            ExchangeCalculator.getInstance().updateExchangeRates(preferences.getString("maincurrency", "USD"), this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         Settings.initiate(this);
         NotificationLauncher.getInstance().start(this);
@@ -347,7 +341,7 @@ public class MainActivity extends SecureAppCompatActivity implements NetworkUpda
         } else if (requestCode == io.taiji.wallet.activities.SendActivity.REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 if (fragments == null || fragments[2] == null) return;
-                ((FragmentTransactionsAll) fragments[2]).addUnconfirmedTransaction(data.getStringExtra("FROM_ADDRESS"), data.getStringExtra("TO_ADDRESS"), new BigDecimal("-" + data.getStringExtra("AMOUNT")).multiply(new BigDecimal("1000000000000000000")).toBigInteger());
+                //((FragmentTransactionsAll) fragments[2]).addUnconfirmedTransaction(data.getStringExtra("FROM_ADDRESS"), data.getStringExtra("TO_ADDRESS"), new BigDecimal("-" + data.getStringExtra("AMOUNT")).multiply(new BigDecimal("1000000000000000000")).toBigInteger());
                 if (tabLayout != null)
                     tabLayout.getTabAt(2).select();
             }
@@ -360,31 +354,22 @@ public class MainActivity extends SecureAppCompatActivity implements NetworkUpda
                 editor.commit();
             }
         } else if (requestCode == io.taiji.wallet.activities.SettingsActivity.REQUEST_CODE) {
-            if (!preferences.getString("maincurrency", "USD").equals(ExchangeCalculator.getInstance().getMainCurreny().getName())) {
-                try {
-                    ExchangeCalculator.getInstance().updateExchangeRates(preferences.getString("maincurrency", "USD"), this);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                new Handler().postDelayed(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                if (fragments != null) {
-                                    if (fragments[0] != null)
-                                        ((FragmentPrice) fragments[0]).update(true);
-                                    if (fragments[1] != null) {
-                                        ((FragmentWallets) fragments[1]).updateBalanceText();
-                                        ((FragmentWallets) fragments[1]).notifyDataSetChanged();
-                                    }
-                                    if (fragments[2] != null)
-                                        ((FragmentTransactionsAll) fragments[2]).notifyDataSetChanged();
+            new Handler().postDelayed(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            if (fragments != null) {
+                                if (fragments[0] != null)
+                                    ((FragmentApplications) fragments[0]).update(true);
+                                if (fragments[1] != null) {
+                                    ((FragmentWallets) fragments[1]).updateBalanceText();
+                                    ((FragmentWallets) fragments[1]).notifyDataSetChanged();
                                 }
+                                if (fragments[2] != null)
+                                    ((FragmentTransactionsAll) fragments[2]).notifyDataSetChanged();
                             }
-                        }, 950);
-            }
-
+                        }
+                    }, 950);
         }
     }
 
@@ -479,7 +464,7 @@ public class MainActivity extends SecureAppCompatActivity implements NetworkUpda
             public void run() {
                 broadCastDataSetChanged();
                 if (fragments != null && fragments[0] != null) {
-                    ((FragmentPrice) fragments[0]).update(true);
+                    ((FragmentApplications) fragments[0]).update(true);
                 }
             }
         });

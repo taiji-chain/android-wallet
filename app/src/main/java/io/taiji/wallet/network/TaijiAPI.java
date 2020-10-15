@@ -38,30 +38,6 @@ public class TaijiAPI {
         return instance;
     }
 
-    public void getPriceChart(long starttime, int period, boolean usd, Callback b) throws IOException {
-        get("https://poloniex.com/public?command=returnChartData&currencyPair=" + (usd ? "USDT_ETH" : "BTC_ETH") + "&start=" + starttime + "&end=9999999999&period=" + period, b);
-    }
-
-
-    /**
-     * Retrieve all internal transactions from address like contract calls, for normal transactions @see rehanced.com.simpleetherwallet.network.EtherscanAPI#getNormalTransactions() )
-     *
-     * @param address Ether address
-     * @param b       Network callback to @see rehanced.com.simpleetherwallet.fragments.FragmentTransactions#update() or @see rehanced.com.simpleetherwallet.fragments.FragmentTransactionsAll#update()
-     * @param force   Whether to force (true) a network call or use cache (false). Only true if user uses swiperefreshlayout
-     * @throws IOException Network exceptions
-     */
-    public void getInternalTransactions(String address, Callback b, boolean force) throws IOException {
-        if (!force && RequestCache.getInstance().contains(RequestCache.TYPE_TXS_INTERNAL, address)) {
-            b.onResponse(null, new Response.Builder().code(200).message("").request(new Request.Builder()
-                    .url("https://api.etherscan.io/api?module=account&action=txlistinternal&address=" + address + "&startblock=0&endblock=99999999&sort=asc&apikey=" + token)
-                    .build()).protocol(Protocol.HTTP_1_0).body(ResponseBody.create(MediaType.parse("JSON"), RequestCache.getInstance().get(RequestCache.TYPE_TXS_INTERNAL, address))).build());
-            return;
-        }
-        get("https://api.etherscan.io/api?module=account&action=txlistinternal&address=" + address + "&startblock=0&endblock=99999999&sort=asc&apikey=" + token, b);
-    }
-
-
     /**
      * Retrieve all normal ether transactions from address (excluding contract calls etc, @see rehanced.com.simpleetherwallet.network.EtherscanAPI#getInternalTransactions() )
      *
@@ -70,14 +46,16 @@ public class TaijiAPI {
      * @param force   Whether to force (true) a network call or use cache (false). Only true if user uses swiperefreshlayout
      * @throws IOException Network exceptions
      */
-    public void getNormalTransactions(String address, Callback b, boolean force) throws IOException {
-        if (!force && RequestCache.getInstance().contains(RequestCache.TYPE_TXS_NORMAL, address)) {
+    public void getTransactions(String address, Callback b, boolean force) throws IOException {
+        String url = "https://test.taiji.io/transaction/" + address + "/taiji?offset=0&limit=10";
+        if (!force && RequestCache.getInstance().contains(RequestCache.TYPE_TXS, address)) {
             b.onResponse(null, new Response.Builder().code(200).message("").request(new Request.Builder()
-                    .url("https://api.etherscan.io/api?module=account&action=txlist&address=" + address + "&startblock=0&endblock=99999999&sort=asc&apikey=" + token)
-                    .build()).protocol(Protocol.HTTP_1_0).body(ResponseBody.create(MediaType.parse("JSON"), RequestCache.getInstance().get(RequestCache.TYPE_TXS_NORMAL, address))).build());
+                    .url(url)
+                    .build()).protocol(Protocol.HTTP_2).body(ResponseBody.create(MediaType.parse("JSON"), RequestCache.getInstance().get(RequestCache.TYPE_TXS, address))).build());
             return;
         }
-        get("https://api.etherscan.io/api?module=account&action=txlist&address=" + address + "&startblock=0&endblock=99999999&sort=asc&apikey=" + token, b);
+        Log.i("TAG", "get transactions " + url);
+        get(url, b);
     }
 
 
@@ -85,30 +63,33 @@ public class TaijiAPI {
         get("https://api.etherscan.io/api?module=stats&action=ethprice&apikey=" + token, b);
     }
 
-
-    public void getGasPrice(Callback b) throws IOException {
-        get("https://api.etherscan.io/api?module=proxy&action=eth_gasPrice&apikey=" + token, b);
-    }
-
-
     /**
-     * Get token balances via ethplorer.io
+     * Get token balances via token-reader service
      *
-     * @param address Ether address
-     * @param b       Network callback to @see rehanced.com.simpleetherwallet.fragments.FragmentDetailOverview#update()
+     * @param address Taiji address
+     * @param b       callback function
      * @param force   Whether to force (true) a network call or use cache (false). Only true if user uses swiperefreshlayout
      * @throws IOException Network exceptions
      */
     public void getTokenBalances(String address, Callback b, boolean force) throws IOException {
-        if (!force && RequestCache.getInstance().contains(RequestCache.TYPE_TOKEN, address)) {
+        if (!force && RequestCache.getInstance().contains(RequestCache.TYPE_TOKENS, address)) {
             b.onResponse(null, new Response.Builder().code(200).message("").request(new Request.Builder()
-                    .url("https://api.ethplorer.io/getAddressInfo/" + address + "?apiKey=freekey")
-                    .build()).protocol(Protocol.HTTP_1_0).body(ResponseBody.create(MediaType.parse("JSON"), RequestCache.getInstance().get(RequestCache.TYPE_TOKEN, address))).build());
+                    .url("https://test.taiji.io/token/account/" + address)
+                    .build()).protocol(Protocol.HTTP_1_0).body(ResponseBody.create(MediaType.parse("JSON"), RequestCache.getInstance().get(RequestCache.TYPE_TOKENS, address))).build());
             return;
         }
-        get("https://api.ethplorer.io/getAddressInfo/" + address + "?apiKey=freekey", b);
+        get("https://test.taiji.io/token/account/" + address, b);
     }
 
+    public void getFee(String address, Callback b) throws IOException {
+        if (RequestCache.getInstance().contains(RequestCache.TYPE_FEES, address.substring(0, 4))) {
+            b.onResponse(null, new Response.Builder().code(200).message("").request(new Request.Builder()
+                    .url("https://test.taiji.io/fee/taiji")
+                    .build()).protocol(Protocol.HTTP_2).body(ResponseBody.create(MediaType.parse("JSON"), RequestCache.getInstance().get(RequestCache.TYPE_FEES, address.substring(0, 4)))).build());
+            return;
+        }
+        get("https://test.taiji.io/fee/taiji", b);
+    }
 
     /**
      * Download and save token icon in permanent image cache (TokenIconCache)
@@ -149,10 +130,6 @@ public class TaijiAPI {
         });
     }
 
-
-    public void getGasLimitEstimate(String to, Callback b) throws IOException {
-        get("https://api.etherscan.io/api?module=proxy&action=eth_estimateGas&to=" + to + "&value=0xff22&gasPrice=0x051da038cc&gas=0xffffff&apikey=" + token, b);
-    }
 
 
     public void getBalance(String address, Callback b) throws IOException {

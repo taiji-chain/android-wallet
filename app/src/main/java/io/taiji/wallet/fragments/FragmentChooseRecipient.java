@@ -2,6 +2,7 @@ package io.taiji.wallet.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -73,7 +74,8 @@ public class FragmentChooseRecipient extends Fragment implements View.OnClickLis
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (addressBox.getText().toString().length() > 15 && addressBox.getText().toString().startsWith("0x"))
+                Log.i("TAG", "address = " + addressBox.getText().toString());
+                if (addressBox.getText().toString().length() == 40)
                     ac.nextStage(addressBox.getText().toString());
                 else
                     ac.snackError("Invalid Recipient");

@@ -110,8 +110,8 @@ class WalletGenRunnerService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int) : Int {
-        password = intent?.getStringExtra("PASSWORD").toString()
-        bankId = intent?.getStringExtra("BANK_ID").toString()
+        password = intent.getStringExtra("PASSWORD").toString()
+        bankId = intent.getStringExtra("BANK_ID").toString()
         Log.i("TAG", password + " " + bankId)
         return START_NOT_STICKY
     }

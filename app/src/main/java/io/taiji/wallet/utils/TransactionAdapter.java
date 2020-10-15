@@ -106,32 +106,17 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 }
             });
 
-            holder.walletbalance.setText(ExchangeCalculator.getInstance().displayBalanceNicely(ExchangeCalculator.getInstance().convertRate(Math.abs(box.getAmount()), ExchangeCalculator.getInstance().getCurrent().getRate())) + " " + ExchangeCalculator.getInstance().getCurrencyShort());
-
+            holder.walletbalance.setText(UnitCalculator.getInstance().displayBalanceNicely(UnitCalculator.getInstance().convertUnit(Math.abs(box.getAmount()), UnitCalculator.getInstance().getCurrent().getUnit())) + " " + UnitCalculator.getInstance().getCurrencyShort());
             String walletname = AddressNameConverter.getInstance(context).get(box.getFromAddress());
             holder.walletname.setText(walletname == null ? box.getWalletName() : walletname);
 
             String toName = AddressNameConverter.getInstance(context).get(box.getToAddress());
             holder.other_address.setText(toName == null ? box.getToAddress() : toName + " (" + box.getToAddress().substring(0, 10) + ")");
-            holder.plusminus.setText(box.getAmount() > 0 ? "+" : "-");
-
-            holder.plusminus.setTextColor(context.getResources().getColor(box.getAmount() > 0 ? R.color.etherReceived : R.color.etherSpent));
-            holder.walletbalance.setTextColor(context.getResources().getColor(box.getAmount() > 0 ? R.color.etherReceived : R.color.etherSpent));
+            holder.plusminus.setText(box.getType());
+            holder.plusminus.setTextColor(context.getResources().getColor(box.getType().equals("+") ? R.color.taijiReceived : R.color.taijiSpent));
+            holder.walletbalance.setTextColor(context.getResources().getColor(box.getType().equals("+") ? R.color.taijiReceived : R.color.taijiSpent));
             holder.container.setAlpha(1f);
-            if (box.getConfirmationStatus() == 0) {
-                holder.month.setText("Unconfirmed");
-                holder.month.setTextColor(context.getResources().getColor(R.color.unconfirmedNew));
-                holder.container.setAlpha(0.75f);
-            } else if (box.getConfirmationStatus() > 12) {
-                holder.month.setText(dateformat.format(new Date(box.getDate())));
-                holder.month.setTextColor(context.getResources().getColor(R.color.normalBlack));
-            } else {
-                holder.month.setText(box.getConfirmationStatus() + " / 12 Confirmations");
-                holder.month.setTextColor(context.getResources().getColor(R.color.unconfirmed));
-            }
-
-            holder.type.setVisibility(box.getType() == TransactionDisplay.NORMAL ? View.INVISIBLE : View.VISIBLE);
-            holder.error.setVisibility(box.isError() ? View.VISIBLE : View.GONE);
+            holder.type.setVisibility(View.INVISIBLE);
             holder.my_addressicon.setImageBitmap(Blockies.createIcon(box.getFromAddress()));
             holder.other_addressicon.setImageBitmap(Blockies.createIcon(box.getToAddress()));
 

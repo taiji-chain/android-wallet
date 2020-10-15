@@ -14,23 +14,23 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.networknt.taiji.utility.Converter;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.taiji.wallet.data.BankFee;
+import io.taiji.wallet.data.UnitEntry;
+import io.taiji.wallet.utils.RequestCache;
+import io.taiji.wallet.utils.UnitCalculator;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -42,39 +42,29 @@ import io.taiji.wallet.network.TaijiAPI;
 import io.taiji.wallet.services.TransactionService;
 import io.taiji.wallet.utils.AddressNameConverter;
 import io.taiji.wallet.utils.Blockies;
-import io.taiji.wallet.utils.CollapseAnimator;
 import io.taiji.wallet.utils.Dialogs;
-import io.taiji.wallet.utils.ExchangeCalculator;
 import io.taiji.wallet.utils.ResponseParser;
 import io.taiji.wallet.utils.WalletStorage;
 
 import static android.app.Activity.RESULT_OK;
-import static io.taiji.wallet.R.id.seekBar;
 
 public class FragmentSend extends Fragment {
-
-    private final int DEFAULT_GAS_PRICE = 12;
-
     private SendActivity ac;
     private Button send;
     private EditText amount;
-    private TextView toAddress, toName, usdPrice, gasText, fromName;
-    private TextView availableEth, availableFiat, availableFiatSymbol;
-    private TextView txCost, txCostFiat, txCostFiatSymbol;
-    private TextView totalCost, totalCostFiat, totalCostFiatSymbol;
-    private SeekBar gas;
+    private TextView toAddress, toName, fromName;
+    private TextView availableTaiji;
+    private TextView txCost;
+    private TextView totalCost;
     private ImageView toicon, fromicon;
     private Spinner spinner;
     private Spinner currencySpinner;
-    private boolean amountInEther = true;
-    private BigInteger gaslimit = new BigInteger("21000");
-    private BigDecimal curAvailable = BigDecimal.ZERO;
-    private BigDecimal curTxCost = new BigDecimal("0.000252");
-    private BigDecimal curAmount = BigDecimal.ZERO;
-    private ExchangeCalculator exchange = ExchangeCalculator.getInstance();
-    private LinearLayout expertMode;
-    private EditText data, userGasLimit;
-    private double realGas;
+    private Long curAmount = 0L; // in shell
+    private Long curTxCost = 1000L; // in shell
+    private Converter.Unit unit;
+    private Long curAvailable = 0L; // in shell
+    private EditText data;
+    private BankFee bankFee;
 
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
@@ -84,72 +74,27 @@ public class FragmentSend extends Fragment {
 
         send = (Button) rootView.findViewById(R.id.send);
         amount = (EditText) rootView.findViewById(R.id.amount);
-        gas = (SeekBar) rootView.findViewById(seekBar);
         toAddress = (TextView) rootView.findViewById(R.id.toAddress);
         toName = (TextView) rootView.findViewById(R.id.toName);
         fromName = (TextView) rootView.findViewById(R.id.fromName);
-        usdPrice = (TextView) rootView.findViewById(R.id.usdPrice);
 
-        availableEth = (TextView) rootView.findViewById(R.id.ethAvailable);
-        availableFiat = (TextView) rootView.findViewById(R.id.ethAvailableFiat);
-        availableFiatSymbol = (TextView) rootView.findViewById(R.id.ethAvailableFiatSymbol);
+        availableTaiji = (TextView) rootView.findViewById(R.id.taijiAvailable);
 
         txCost = (TextView) rootView.findViewById(R.id.txCost);
-        txCostFiat = (TextView) rootView.findViewById(R.id.txCostFiat);
-        txCostFiatSymbol = (TextView) rootView.findViewById(R.id.txCostFiatSymbol);
-
         totalCost = (TextView) rootView.findViewById(R.id.totalCost);
-        totalCostFiat = (TextView) rootView.findViewById(R.id.totalCostFiat);
-        totalCostFiatSymbol = (TextView) rootView.findViewById(R.id.totalCostFiatSymbol);
 
-        gasText = (TextView) rootView.findViewById(R.id.gasText);
         toicon = (ImageView) rootView.findViewById(R.id.toicon);
         fromicon = (ImageView) rootView.findViewById(R.id.fromicon);
-        expertMode = (LinearLayout) rootView.findViewById(R.id.expertmode);
         data = (EditText) rootView.findViewById(R.id.data);
-        userGasLimit = (EditText) rootView.findViewById(R.id.gaslimit);
-
-        ((LinearLayout) rootView.findViewById(R.id.expertmodetrigger)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (expertMode.getVisibility() == View.GONE) {
-                    CollapseAnimator.expand(expertMode);
-                } else {
-                    CollapseAnimator.collapse(expertMode);
-                }
-            }
-        });
 
         if (getArguments().containsKey("TO_ADDRESS")) {
             setToAddress(getArguments().getString("TO_ADDRESS"), ac);
         }
 
         if (getArguments().containsKey("AMOUNT")) {
-            curAmount = new BigDecimal(getArguments().getString("AMOUNT"));
+            curAmount = new Long(getArguments().getString("AMOUNT"));
             amount.setText(getArguments().getString("AMOUNT"));
         }
-
-        gas.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                realGas = (i - 8);
-                if (i < 10)
-                    realGas = (double) (i + 1) / 10d;
-
-                gasText.setText((realGas + "").replaceAll(".0", ""));
-                curTxCost = (new BigDecimal(gaslimit).multiply(new BigDecimal(realGas + ""))).divide(new BigDecimal("1000000000"), 6, BigDecimal.ROUND_DOWN);
-                updateDisplays();
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
-        gas.setProgress(DEFAULT_GAS_PRICE);
 
         spinner = (Spinner) rootView.findViewById(R.id.spinner);
         final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(ac, R.layout.address_spinner, WalletStorage.getInstance(ac).getFullOnly()) {
@@ -191,19 +136,23 @@ public class FragmentSend extends Fragment {
         });
 
         currencySpinner = (Spinner) rootView.findViewById(R.id.currency_spinner);
-        List<String> currencyList = new ArrayList<>();
-        currencyList.add("ETH");
-        currencyList.add(ExchangeCalculator.getInstance().getMainCurreny().getName());
-        ArrayAdapter<String> curAdapter = new ArrayAdapter<>(ac, android.R.layout.simple_spinner_item, currencyList);
+        List<String> unitList = new ArrayList<>();
+        for(UnitEntry entry: UnitCalculator.getInstance().getConversionNames()) {
+            unitList.add(entry.getName());
+        }
+        ArrayAdapter<String> curAdapter = new ArrayAdapter<>(ac, android.R.layout.simple_spinner_item, unitList);
         curAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         currencySpinner.setAdapter(curAdapter);
         currencySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                amountInEther = i == 0;
-
+                Log.i("TAG", "i = " + i + " l = " + l);
+                Log.i("TAG", "unit name = " + unitList.get(i));
+                unit = Converter.Unit.fromString(unitList.get(i));
+                Log.i("TAG", "unit = " + unit.toString());
                 updateAmount(amount.getText().toString());
                 updateDisplays();
+                getFee();
             }
 
             @Override
@@ -225,13 +174,13 @@ public class FragmentSend extends Fragment {
                 if (spinner == null || spinner.getSelectedItem() == null) return;
                 try {
                     if (BuildConfig.DEBUG)
-                        Log.d("etherbalance", (getCurTotalCost().compareTo(curAvailable) < 0) + " | " + getCurTotalCost() + " | " + curAvailable + " | " + data.getText() + " | " + curAmount);
+                        Log.d("taijiBalance", (getCurTotalCost().compareTo(curAvailable) < 0) + " | " + getCurTotalCost() + " | " + curAvailable + " | " + curAmount);
                     if (getCurTotalCost().compareTo(curAvailable) < 0 || BuildConfig.DEBUG || data.getText().length() > 0) {
                         Dialogs.askForPasswordAndDecode(ac, spinner.getSelectedItem().toString(), new PasswordDialogCallback(){
 
                             @Override
                             public void success(String password) {
-                                sendEther(password, spinner.getSelectedItem().toString());
+                                sendTaiji(password, spinner.getSelectedItem().toString());
                             }
 
                             @Override
@@ -277,7 +226,7 @@ public class FragmentSend extends Fragment {
                         @Override
                         public void run() {
                             try {
-                                curAvailable = new BigDecimal(ResponseParser.parseBalance(response.body().string(), 6));
+                                curAvailable = new Long(ResponseParser.parseBalance(response.body().string()));
                                 updateDisplays();
                             } catch (Exception e) {
                                 ac.snackError("Cant fetch your account balance");
@@ -306,88 +255,68 @@ public class FragmentSend extends Fragment {
 
     private void updateDisplays() {
         updateAvailableDisplay();
-        updateAmountDisplay();
         updateTxCostDisplay();
         updateTotalCostDisplay();
     }
 
     private void updateAvailableDisplay() {
-        exchange.setIndex(2);
-
-        availableEth.setText(curAvailable.toString());
-        availableFiat.setText(exchange.convertRateExact(curAvailable, exchange.getUSDPrice()));
-        availableFiatSymbol.setText(exchange.getCurrent().getShorty());
+        availableTaiji.setText(curAvailable.toString());
     }
 
     private void updateAmount(String str) {
         try {
-            final BigDecimal origA = new BigDecimal(str);
-
-            if (amountInEther) {
-                curAmount = origA;
-            } else {
-                curAmount = origA.divide(new BigDecimal(exchange.getUSDPrice()), 7, RoundingMode.FLOOR);
-            }
+            final Long origA = new Long(str);
+            curAmount = Converter.toShell(origA, unit);
         } catch (NumberFormatException e) {
-            curAmount = BigDecimal.ZERO;
+            curAmount = 0L;
         }
-    }
-
-    private void updateAmountDisplay() {
-        String price;
-        if (amountInEther) {
-            price = exchange.convertRateExact(curAmount, exchange.getUSDPrice()) +
-                    " " + exchange.getMainCurreny().getName();
-        } else {
-            exchange.setIndex(0);
-            price = curAmount.toPlainString() + " " + exchange.getCurrent().getShorty();
-        }
-
-        usdPrice.setText(price);
     }
 
     private void updateTxCostDisplay() {
-        exchange.setIndex(2);
-
         txCost.setText(curTxCost.toString());
-        txCostFiat.setText(exchange.convertRateExact(curTxCost, exchange.getUSDPrice()));
-        txCostFiatSymbol.setText(exchange.getCurrent().getShorty());
     }
 
-    private BigDecimal getCurTotalCost() {
-        return curAmount.add(curTxCost, MathContext.DECIMAL64);
+    private Long getCurTotalCost() {
+        return curAmount + curTxCost;
     }
 
     private void updateTotalCostDisplay() {
-        exchange.setIndex(2);
-
-        final BigDecimal curTotalCost = getCurTotalCost();
-
+        // total cost in SHELL
+        final Long curTotalCost = getCurTotalCost();
         totalCost.setText(curTotalCost.toString());
-        totalCostFiat.setText(exchange.convertRateExact(curTotalCost, exchange.getUSDPrice()));
-        totalCostFiatSymbol.setText(exchange.getCurrent().getShorty());
     }
 
-    private void getEstimatedGasPriceLimit() {
+    private void getFee() {
         try {
-            TaijiAPI.getInstance().getGasLimitEstimate(toAddress.getText().toString(), new Callback() {
+            TaijiAPI.getInstance().getFee(spinner.getSelectedItem().toString(), new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
+
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
+                    String restring = response.body().string();
+                    Log.i("TAG", restring);
+                    if (restring != null && restring.length() > 2) {
+                        RequestCache.getInstance().put(RequestCache.TYPE_FEES, spinner.getSelectedItem().toString().substring(0, 4), restring);
+                    }
                     try {
-                        gaslimit = ResponseParser.parseGasPrice(response.body().string());
-                        ac.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                userGasLimit.setText(gaslimit + "");
-                            }
-                        });
+                        bankFee = ResponseParser.parseBankFee(restring);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    ac.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(spinner.getSelectedItem().toString().substring(0, 4).equals(toAddress.toString().substring(0, 4))) {
+                                curTxCost = (long)bankFee.getInnerChain();
+                            } else {
+                                curTxCost = (long)bankFee.getInterChain();
+                            }
+                            txCost.setText(curTxCost.toString());
+                        }
+                    });
                 }
             });
         } catch (IOException e) {
@@ -396,21 +325,20 @@ public class FragmentSend extends Fragment {
     }
 
 
-    private void sendEther(String password, String fromAddress) {
+    private void sendTaiji(String password, String fromAddress) {
         Intent txService = new Intent(ac, TransactionService.class);
         txService.putExtra("FROM_ADDRESS", fromAddress);
         txService.putExtra("TO_ADDRESS", toAddress.getText().toString());
-        txService.putExtra("AMOUNT", curAmount.toPlainString()); // In ether, gets converted by the service itself
-        txService.putExtra("GAS_PRICE", (new BigDecimal(realGas + "").multiply(new BigDecimal("1000000000")).toBigInteger()).toString());// "21000000000");
-        txService.putExtra("GAS_LIMIT", userGasLimit.getText().length() <= 0 ? gaslimit.toString() : userGasLimit.getText().toString());
+        txService.putExtra("AMOUNT", curAmount);
+        txService.putExtra("BANK_FEE", curTxCost);
         txService.putExtra("PASSWORD", password);
-        txService.putExtra("DATA", data.getText().toString());
+        txService.putExtra("BANK_ADDRESS", bankFee.getBankAddress());
         ac.startService(txService);
 
         Intent data = new Intent();
         data.putExtra("FROM_ADDRESS", fromAddress);
         data.putExtra("TO_ADDRESS", toAddress.getText().toString());
-        data.putExtra("AMOUNT", curAmount.toPlainString());
+        data.putExtra("AMOUNT", curAmount);
         ac.setResult(RESULT_OK, data);
         ac.finish();
     }
@@ -421,6 +349,6 @@ public class FragmentSend extends Fragment {
         String name = AddressNameConverter.getInstance(c).get(to);
         toName.setText(name == null ? to.substring(0, 10) : name);
         toicon.setImageBitmap(Blockies.createIcon(to));
-        getEstimatedGasPriceLimit();
+        getFee();
     }
 }

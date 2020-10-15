@@ -77,7 +77,9 @@ public class TokenAdapter extends RecyclerView.Adapter<TokenAdapter.MyViewHolder
         });
 
         holder.name.setText(box.getName());
-        double tbalance = box.getBalanceDouble();
+
+        double tbalance = box.getBalance();
+        /*
         holder.nativebalance.setText(ExchangeCalculator.getInstance().displayEthNicely(tbalance) + " " + box.getShorty());
         holder.etherbalance.setText(
                 ExchangeCalculator.getInstance().displayEthNicely(
@@ -99,7 +101,7 @@ public class TokenAdapter extends RecyclerView.Adapter<TokenAdapter.MyViewHolder
                             ExchangeCalculator.getInstance().convertRate(tbalance, ExchangeCalculator.getInstance().getCurrent().getRate())) + " " +
                             ExchangeCalculator.getInstance().getCurrent().getShorty());
         }
-
+        */
         setAnimation(holder.container, position);
     }
 

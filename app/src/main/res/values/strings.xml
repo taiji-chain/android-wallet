@@ -17,7 +17,7 @@
     <string name="drawer_about">About Us</string>
     <string name="drawer_donate">Donate</string>
 
-    <string name="fr_price_current_price">Current Price</string>
+    <string name="fr_applications">Applications</string>
     <string name="fr_wallet_overall_balance">Overall Balance</string>
     <string name="fr_detail_acc_balance">Account Balance</string>
 
@@ -108,11 +108,11 @@
 
     <string name="choose_your_address">From</string>
     <string name="send_to">To</string>
-    <string name="choose_ether_amount">Available Ether</string>
-    <string name="choose_gas">Transaction Cost</string>
+    <string name="choose_taiji_amount">Available Taiji</string>
+    <string name="choose_fee">Transaction Cost</string>
 
 
-    <string name="request_activity_ether">Request Amount</string>
+    <string name="request_activity_taiji">Request Amount</string>
     <string name="request_activity_to">Your Wallets / Addresses</string>
 
     <string name="no_tx_history">This is the transaction overview showing all currencies sent and received to and from other people. After adding a wallet and transferring some Taiji to it, the transaction and all future transactions will be displayed here.</string>
@@ -133,7 +133,7 @@
     <string name="fragment_detail_add_sharing">Address Sharing</string>
     <string name="fragment_detail_share_button">Share</string>
     <string name="walletgen_title">Generate Wallet</string>
-    <string name="request_ether_title">Request Ether</string>
+    <string name="request_taiji_title">Request Taiji</string>
     <string name="qr_scan_title">QR Address</string>
     <string name="activity_send_title">Transaction</string>
     <string name="last_24_hours">Last 24 Hours</string>
@@ -179,7 +179,7 @@
     <string name="main_grant_permission_import">Please grant read permission to import Wallets</string>
     <string name="dialog_watch_only_title">Lookup Address</string>
     <string name="dialog_importing_wallets_title">Importing Wallets?</string>
-    <string name="dialog_importing_wallets_text">We have detected %1$d new wallet%2$s in our Lunary folder. Would you like to import: %3$s</string>
+    <string name="dialog_importing_wallets_text">We have detected %1$d new wallet%2$s in our Taiji folder. Would you like to import: %3$s</string>
     <string name="dialog_ex_nofull_title">No Full Wallet</string>
     <string name="dialog_ex_nofull_text">Watch only wallets can not be exported.</string>
     <string name="dialog_exporting_title">Exporting your Wallet</string>
@@ -202,9 +202,9 @@
     <string name="notification_wallgen_finished">Wallet Creation Finished!</string>
     <string name="notification_wallimp_finished">Wallet Import Finished!</string>
     <string name="notification_click_to_view">Click to view</string>
-    <string name="ether_and_token">Ether and Token</string>
+    <string name="taiji_and_token">Taiji and Token</string>
     <string name="prefs_lock_with_pw">Lock with Password</string>
-    <string name="prefs_lock_with_pw_sum">If enabled Lunary will ask you for a password before launching the app</string>
+    <string name="prefs_lock_with_pw_sum">If enabled Taiji will ask you for a password before launching the app</string>
     <string name="prefs_set_pw">Set Password</string>
     <string name="prefs_set_pw_sum">Specify your login pattern</string>
     <string name="prefs_cat_security">Security</string>
@@ -214,8 +214,7 @@
     <string name="tx_cost">TX Cost</string>
     <string name="gas_used">Gas Used</string>
     <string name="gas_price">Gas Price</string>
-    <string name="nonce">Nonce</string>
-    <string name="block_height">Block Height</string>
+    <string name="txid">Tx Id</string>
     <string name="timestamp">Timestamp</string>
     <string name="wallet_menu_share">Share Address</string>
     <string name="wallet_menu_action_copied_to_clipboard">Copied to Clipboard</string>
@@ -232,7 +231,7 @@
     <string name="send_expert_warning">You can add extra data to send along with your transaction. If you don\'t know what this is, then don\'t touch it, or bad things may happen!</string>
     <string name="expert_mode_optional">Expert Mode (Optional)</string>
     <string name="transaction_failed">Transaction failed</string>
-    <string name="reddit">Lunary Subreddit</string>
+    <string name="reddit">Taiji Subreddit</string>
     <string name="add">Add</string>
     <string name="show">Show</string>
     <string name="setting_erc_qr_encoding">Use ERC-67 QR Encoding</string>
@@ -245,7 +244,7 @@
     <string name="setting_show_ad">Display Ads</string>
 
     <string name="dialog_disable_ad_title">:(</string>
-    <string name="dialog_disable_ad_text">We depend heavily on donations and ad revenue to actively work and improve Lunary. If the ad really bothers you that much thats fine, we understand that and we will let you disable it. But if it isnt too much to ask we would like to change your mind to keep Lunary getting better and better. This small ad banner really helps us, same goes for every donation we receive. Please keep the banner enabled or consider a small donation. You need to restart the app for your new setting to take affect. Continue?</string>
+    <string name="dialog_disable_ad_text">We depend heavily on donations and ad revenue to actively work and improve Taiji. If the ad really bothers you that much thats fine, we understand that and we will let you disable it. But if it isnt too much to ask we would like to change your mind to keep Taiji getting better and better. This small ad banner really helps us, same goes for every donation we receive. Please keep the banner enabled or consider a small donation. You need to restart the app for your new setting to take affect. Continue?</string>
 
     <string name="showcase_got_it">GOT IT</string>
     <string name="show_case_wallet_gen_text">To generate a new wallet just press on the + and select "Generate New Wallet"</string>

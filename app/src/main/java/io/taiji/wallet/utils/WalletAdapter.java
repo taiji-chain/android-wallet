@@ -86,7 +86,7 @@ public class WalletAdapter extends RecyclerView.Adapter<WalletAdapter.MyViewHold
             holder.walletbalance.setText(ExchangeCalculator.getInstance().displayBalanceNicely(ExchangeCalculator.getInstance().convertRate(box.getBalance(), ExchangeCalculator.getInstance().getCurrent().getRate())) + " " + ExchangeCalculator.getInstance().getCurrencyShort());
         holder.addressimage.setImageBitmap(Blockies.createIcon(box.getPublicKey()));
 
-        holder.type.setVisibility(box.getType() == TransactionDisplay.NORMAL || box.getType() == WalletDisplay.CONTACT ? View.INVISIBLE : View.VISIBLE);
+        holder.type.setVisibility(box.getType() == WalletDisplay.CONTACT ? View.INVISIBLE : View.VISIBLE);
 
         setAnimation(holder.container, position);
     }

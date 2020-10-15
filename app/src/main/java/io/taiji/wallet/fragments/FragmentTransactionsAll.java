@@ -29,7 +29,6 @@ import static android.view.View.GONE;
 public class FragmentTransactionsAll extends FragmentTransactionsAbstract {
 
     protected TransactionDisplay unconfirmed;
-    private long unconfirmed_addedTime;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
@@ -65,8 +64,7 @@ public class FragmentTransactionsAll extends FragmentTransactionsAbstract {
             for (int i = 0; i < storedwallets.size(); i++) {
                 try {
                     final StorableWallet currentWallet = storedwallets.get(i);
-
-                    TaijiAPI.getInstance().getNormalTransactions(currentWallet.getPubKey(), new Callback() {
+                    TaijiAPI.getInstance().getTransactions(currentWallet.getPubKey(), new Callback() {
                         @Override
                         public void onFailure(Call call, IOException e) {
                             if (isAdded()) {
@@ -84,38 +82,8 @@ public class FragmentTransactionsAll extends FragmentTransactionsAbstract {
                         public void onResponse(Call call, Response response) throws IOException {
                             String restring = response.body().string();
                             if (restring != null && restring.length() > 2)
-                                RequestCache.getInstance().put(RequestCache.TYPE_TXS_NORMAL, currentWallet.getPubKey(), restring);
-                            final ArrayList<TransactionDisplay> w = new ArrayList<TransactionDisplay>(ResponseParser.parseTransactions(restring, "Unnamed Address", currentWallet.getPubKey(), TransactionDisplay.NORMAL));
-                            if (isAdded()) {
-                                ac.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        onComplete(w, storedwallets);
-                                    }
-                                });
-                            }
-                        }
-                    }, force);
-                    TaijiAPI.getInstance().getInternalTransactions(currentWallet.getPubKey(), new Callback() {
-                        @Override
-                        public void onFailure(Call call, IOException e) {
-                            if (isAdded()) {
-                                ac.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        onItemsLoadComplete();
-                                        ((MainActivity) ac).snackError("No internet connection");
-                                    }
-                                });
-                            }
-                        }
-
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-                            String restring = response.body().string();
-                            if (restring != null && restring.length() > 2)
-                                RequestCache.getInstance().put(RequestCache.TYPE_TXS_INTERNAL, currentWallet.getPubKey(), restring);
-                            final ArrayList<TransactionDisplay> w = new ArrayList<TransactionDisplay>(ResponseParser.parseTransactions(restring, "Unnamed Address", currentWallet.getPubKey(), TransactionDisplay.CONTRACT));
+                                RequestCache.getInstance().put(RequestCache.TYPE_TXS, currentWallet.getPubKey(), restring);
+                            final ArrayList<TransactionDisplay> w = new ArrayList<>(ResponseParser.parseTransactions(restring, "Unnamed Address", currentWallet.getPubKey()));
                             if (isAdded()) {
                                 ac.runOnUiThread(new Runnable() {
                                     @Override
@@ -133,7 +101,6 @@ public class FragmentTransactionsAll extends FragmentTransactionsAbstract {
 
                         // So "if(getRequestCount() >= storedwallets.size()*2)" limit can be reached even if there are expetions for certain addresses (2x because of internal and normal)
                         addRequestCount();
-                        addRequestCount();
                         onItemsLoadComplete();
                         e.printStackTrace();
                     }
@@ -148,10 +115,6 @@ public class FragmentTransactionsAll extends FragmentTransactionsAbstract {
         addRequestCount();
         if (getRequestCount() >= storedwallets.size() * 2) {
             onItemsLoadComplete();
-
-            // If transaction was send via App and has no confirmations yet (Still show it when users refreshes for 10 minutes)
-            if (unconfirmed_addedTime + 10 * 60 * 1000 < System.currentTimeMillis()) // After 10 minutes remove unconfirmed (should now have at least 1 confirmation anyway)
-                unconfirmed = null;
             if (unconfirmed != null && wallets.size() > 0) {
                 if (wallets.get(0).getAmount() == unconfirmed.getAmount()) {
                     unconfirmed = null;
@@ -164,13 +127,4 @@ public class FragmentTransactionsAll extends FragmentTransactionsAbstract {
             walletAdapter.notifyDataSetChanged();
         }
     }
-
-
-    public void addUnconfirmedTransaction(String from, String to, BigInteger amount) {
-        unconfirmed = new TransactionDisplay(from, to, amount, 0, System.currentTimeMillis(), "", TransactionDisplay.NORMAL, "", "0", 0, 1, 1, false);
-        unconfirmed_addedTime = System.currentTimeMillis();
-        wallets.add(0, unconfirmed);
-        notifyDataSetChanged();
-    }
-
 }

@@ -9,32 +9,18 @@ public class TokenDisplay implements Comparable {
 
     private String name;
     private String shorty;
-    private BigDecimal balance;
+    private Long balance;
     private int digits;
-    private double usdprice;
-    private String contractAddr;
-    private String totalSupply;
-    private long holderCount;
-    private long createdAt;
+    private String tokenAddress;
+    private Long totalSupply;
 
-    public TokenDisplay(String name, String shorty, BigDecimal balance, int digits, double usdprice, String contractAddr, String totalSupply, long holderCount, long createdAt) {
+    public TokenDisplay(String name, String shorty, long balance, int digits, String tokenAddress, long totalSupply) {
         this.name = name;
         this.shorty = shorty;
         this.balance = balance;
         this.digits = digits;
-        this.usdprice = usdprice;
-        this.contractAddr = contractAddr;
+        this.tokenAddress = tokenAddress;
         this.totalSupply = totalSupply;
-        this.holderCount = holderCount;
-        this.createdAt = createdAt;
-    }
-
-    public long getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(long createdAt) {
-        this.createdAt = createdAt;
     }
 
     public String getName() {
@@ -53,29 +39,11 @@ public class TokenDisplay implements Comparable {
         this.shorty = shorty;
     }
 
-    public BigDecimal getBalance() {
+    public Long getBalance() {
         return balance;
     }
 
-    /**
-     * Uses digits and balance to create a double value
-     *
-     * @return Token balance in double
-     */
-    public double getBalanceDouble() {
-        return balance.divide((new BigDecimal("10").pow(digits))).doubleValue();
-    }
-
-    /**
-     * Uses digits and total supply to create a long value
-     *
-     * @return Token supply in long
-     */
-    public long getTotalSupplyLong() {
-        return new BigInteger(totalSupply).divide((new BigInteger("10").pow(digits))).longValue();
-    }
-
-    public void setBalance(BigDecimal balance) {
+    public void setBalance(Long balance) {
         this.balance = balance;
     }
 
@@ -87,36 +55,20 @@ public class TokenDisplay implements Comparable {
         this.digits = digits;
     }
 
-    public double getUsdprice() {
-        return usdprice;
+    public String getTokenAddress() {
+        return tokenAddress;
     }
 
-    public void setUsdprice(double usdprice) {
-        this.usdprice = usdprice;
+    public void setTokenAddress(String tokenAddress) {
+        this.tokenAddress = tokenAddress;
     }
 
-    public String getContractAddr() {
-        return contractAddr;
-    }
-
-    public void setContractAddr(String contractAddr) {
-        this.contractAddr = contractAddr;
-    }
-
-    public String getTotalSupply() {
+    public Long getTotalSupply() {
         return totalSupply;
     }
 
-    public void setTotalSupply(String totalSupply) {
+    public void setTotalSupply(Long totalSupply) {
         this.totalSupply = totalSupply;
-    }
-
-    public long getHolderCount() {
-        return holderCount;
-    }
-
-    public void setHolderCount(long holderCount) {
-        this.holderCount = holderCount;
     }
 
     @Override

@@ -144,7 +144,7 @@ public class AppLockActivity extends BasePatternActivity implements PatternView.
 
         try {
             keyStore.load(null);
-            SecretKey key = (SecretKey) keyStore.getKey("Lunary", null);
+            SecretKey key = (SecretKey) keyStore.getKey("Taiji", null);
             cipher.init(Cipher.ENCRYPT_MODE, key);
             return true;
         } catch (Exception e) {
@@ -166,7 +166,7 @@ public class AppLockActivity extends BasePatternActivity implements PatternView.
 
             keyStore.load(null);
             keyGenerator.init(new
-                    KeyGenParameterSpec.Builder("Lunary",
+                    KeyGenParameterSpec.Builder("Taiji",
                     KeyProperties.PURPOSE_ENCRYPT |
                             KeyProperties.PURPOSE_DECRYPT)
                     .setBlockModes(KeyProperties.BLOCK_MODE_CBC)

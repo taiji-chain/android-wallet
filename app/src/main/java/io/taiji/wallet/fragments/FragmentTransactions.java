@@ -1,6 +1,7 @@
 package io.taiji.wallet.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +40,7 @@ public class FragmentTransactions extends FragmentTransactionsAbstract {
             swipeLayout.setRefreshing(true);
 
         try {
-            TaijiAPI.getInstance().getNormalTransactions(address, new Callback() {
+            TaijiAPI.getInstance().getTransactions(address, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     if (isAdded()) {
@@ -56,39 +57,10 @@ public class FragmentTransactions extends FragmentTransactionsAbstract {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     String restring = response.body().string();
+                    Log.i("TAG", restring);
                     if (restring != null && restring.length() > 2)
-                        RequestCache.getInstance().put(RequestCache.TYPE_TXS_NORMAL, address, restring);
-                    final List<TransactionDisplay> w = new ArrayList<TransactionDisplay>(ResponseParser.parseTransactions(restring, "Unnamed Address", address, TransactionDisplay.NORMAL));
-                    if (isAdded()) {
-                        ac.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                onComplete(w);
-                            }
-                        });
-                    }
-                }
-            }, force);
-            TaijiAPI.getInstance().getInternalTransactions(address, new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    if (isAdded()) {
-                        ac.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                onItemsLoadComplete();
-                                ((AddressDetailActivity) ac).snackError(getString(R.string.err_no_con));
-                            }
-                        });
-                    }
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    String restring = response.body().string();
-                    if (restring != null && restring.length() > 2)
-                        RequestCache.getInstance().put(RequestCache.TYPE_TXS_INTERNAL, address, restring);
-                    final List<TransactionDisplay> w = new ArrayList<TransactionDisplay>(ResponseParser.parseTransactions(restring, "Unnamed Address", address, TransactionDisplay.CONTRACT));
+                        RequestCache.getInstance().put(RequestCache.TYPE_TXS, address, restring);
+                    final List<TransactionDisplay> w = new ArrayList<>(ResponseParser.parseTransactions(restring, "Unnamed Address", address));
                     if (isAdded()) {
                         ac.runOnUiThread(new Runnable() {
                             @Override

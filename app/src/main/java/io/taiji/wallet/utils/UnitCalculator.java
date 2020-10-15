@@ -2,7 +2,6 @@ package io.taiji.wallet.utils;
 
 import com.networknt.taiji.utility.Converter;
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import io.taiji.wallet.data.UnitEntry;
 
@@ -43,6 +42,10 @@ public class UnitCalculator {
     public UnitEntry next() {
         index = (index + 1) % conversionNames.length;
         return conversionNames[index];
+    }
+
+    public UnitEntry[] getConversionNames() {
+        return conversionNames;
     }
 
     public UnitEntry getCurrent() {

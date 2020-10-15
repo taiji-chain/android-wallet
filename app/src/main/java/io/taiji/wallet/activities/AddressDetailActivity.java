@@ -59,7 +59,7 @@ public class AddressDetailActivity extends SecureAppCompatActivity {
         fragments[2] = new FragmentTransactions();
         Bundle bundle = new Bundle();
         bundle.putString("ADDRESS", address);
-        bundle.putDouble("BALANCE", getIntent().getDoubleExtra("BALANCE", 0));
+        bundle.putLong("BALANCE", getIntent().getLongExtra("BALANCE", 0));
         bundle.putByte("TYPE", type);
         fragments[0].setArguments(bundle);
         fragments[1].setArguments(bundle);

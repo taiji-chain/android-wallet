@@ -6,8 +6,12 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
@@ -20,16 +24,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
+import com.networknt.taiji.utility.Converter;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.taiji.wallet.R;
+import io.taiji.wallet.data.UnitEntry;
 import io.taiji.wallet.data.WalletDisplay;
 import io.taiji.wallet.interfaces.StorableWallet;
 import io.taiji.wallet.utils.AddressNameConverter;
 import io.taiji.wallet.utils.ExchangeCalculator;
+import io.taiji.wallet.utils.UnitCalculator;
 import io.taiji.wallet.utils.WalletAdapter;
 import io.taiji.wallet.utils.WalletStorage;
 import io.taiji.wallet.utils.qr.AddressEncoder;
@@ -38,7 +45,7 @@ import io.taiji.wallet.utils.qr.QREncoder;
 
 import static io.taiji.wallet.R.id.qrcode;
 
-public class RequestEtherActivity extends SecureAppCompatActivity implements View.OnClickListener {
+public class RequestActivity extends SecureAppCompatActivity implements View.OnClickListener {
 
     private CoordinatorLayout coord;
     private ImageView qr;
@@ -46,12 +53,15 @@ public class RequestEtherActivity extends SecureAppCompatActivity implements Vie
     private WalletAdapter walletAdapter;
     private List<WalletDisplay> wallets = new ArrayList<>();
     private String selectedEtherAddress;
-    private TextView amount, usdPrice;
+    private TextView amount;
+    private Spinner currencySpinner;
+    private Long curAmount = 0L; // in shell
+    private Converter.Unit unit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_requestether);
+        setContentView(R.layout.activity_request);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -62,7 +72,6 @@ public class RequestEtherActivity extends SecureAppCompatActivity implements Vie
         qr = (ImageView) findViewById(qrcode);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         amount = (TextView) findViewById(R.id.amount);
-        usdPrice = (TextView) findViewById(R.id.usdPrice);
         walletAdapter = new WalletAdapter(wallets, this, this, this);
         LinearLayoutManager mgr = new LinearLayoutManager(this.getApplicationContext());
         RecyclerView.LayoutManager mLayoutManager = mgr;
@@ -87,13 +96,37 @@ public class RequestEtherActivity extends SecureAppCompatActivity implements Vie
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() != 0) {
                     try {
-                        double amountd = Double.parseDouble(amount.getText().toString());
-                        usdPrice.setText(ExchangeCalculator.getInstance().displayUsdNicely(ExchangeCalculator.getInstance().convertToUsd(amountd)) + " " + ExchangeCalculator.getInstance().getMainCurreny().getName());
+                        updateAmount(amount.getText().toString());
                         updateQR();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
+            }
+        });
+
+        currencySpinner = (Spinner)findViewById(R.id.currency_spinner);
+        List<String> unitList = new ArrayList<>();
+        for(UnitEntry entry: UnitCalculator.getInstance().getConversionNames()) {
+            unitList.add(entry.getName());
+        }
+        ArrayAdapter<String> curAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, unitList);
+        curAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        currencySpinner.setAdapter(curAdapter);
+        currencySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.i("TAG", "i = " + i + " l = " + l);
+                Log.i("TAG", "unit name = " + unitList.get(i));
+                unit = Converter.Unit.fromString(unitList.get(i));
+                Log.i("TAG", "unit = " + unit.toString());
+                updateAmount(amount.getText().toString());
+                update();
+                updateQR();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
 
@@ -127,16 +160,16 @@ public class RequestEtherActivity extends SecureAppCompatActivity implements Vie
     public void updateQR() {
         int qrCodeDimention = 400;
         String iban = "iban:" + selectedEtherAddress;
-        if (amount.getText().toString().length() > 0 && new BigDecimal(amount.getText().toString()).compareTo(new BigDecimal("0")) > 0) {
-            iban += "?amount=" + amount.getText().toString();
+        if (curAmount > 0) {
+            iban += "?amount=" + curAmount;
         }
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         QREncoder qrCodeEncoder;
         if (prefs.getBoolean("qr_encoding_erc", true)) {
             AddressEncoder temp = new AddressEncoder(selectedEtherAddress);
-            if (amount.getText().toString().length() > 0 && new BigDecimal(amount.getText().toString()).compareTo(new BigDecimal("0")) > 0)
-                temp.setAmount(amount.getText().toString());
+            if (curAmount > 0)
+                temp.setAmount(curAmount.toString());
             qrCodeEncoder = new QREncoder(AddressEncoder.encodeERC(temp), null,
                     Contents.Type.TEXT, BarcodeFormat.QR_CODE.toString(), qrCodeDimention);
         } else {
@@ -149,6 +182,14 @@ public class RequestEtherActivity extends SecureAppCompatActivity implements Vie
             qr.setImageBitmap(bitmap);
         } catch (WriterException e) {
             e.printStackTrace();
+        }
+    }
+    private void updateAmount(String str) {
+        try {
+            final Long origA = new Long(str);
+            curAmount = Converter.toShell(origA, unit);
+        } catch (NumberFormatException e) {
+            curAmount = 0L;
         }
     }
 

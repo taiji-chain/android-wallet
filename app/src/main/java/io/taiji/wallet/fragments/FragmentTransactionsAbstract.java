@@ -36,7 +36,7 @@ import java.util.List;
 
 import io.taiji.wallet.R;
 import io.taiji.wallet.activities.AddressDetailActivity;
-import io.taiji.wallet.activities.RequestEtherActivity;
+import io.taiji.wallet.activities.RequestActivity;
 import io.taiji.wallet.activities.SendActivity;
 import io.taiji.wallet.data.TransactionDisplay;
 import io.taiji.wallet.utils.AddressNameConverter;
@@ -140,7 +140,7 @@ public abstract class FragmentTransactionsAbstract extends Fragment implements V
         if (WalletStorage.getInstance(ac).get().size() == 0) {
             Dialogs.noWallet(ac);
         } else {
-            Intent newTrans = new Intent(ac, RequestEtherActivity.class);
+            Intent newTrans = new Intent(ac, RequestActivity.class);
             ac.startActivity(newTrans);
         }
     }
@@ -213,7 +213,7 @@ public abstract class FragmentTransactionsAbstract extends Fragment implements V
                 break;
             }
             case 102: { // Open in Browser
-                String url = "https://etherscan.io/tx/" + wallets.get(position).getTxHash();
+                String url = "https://test.taiji.io/tx/" + wallets.get(position).getId();
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(url));
                 startActivity(i);

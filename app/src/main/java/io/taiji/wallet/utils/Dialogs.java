@@ -117,6 +117,7 @@ public class Dialogs {
 
     }
 
+    /*
     public static void showTokenetails(final Activity c, final TokenDisplay tok) {
         MaterialDialog dialog = new MaterialDialog.Builder(c)
                 .customView(R.layout.dialog_token_detail, true)
@@ -162,7 +163,7 @@ public class Dialogs {
         holders.setText(ex.displayUsdNicely(tok.getHolderCount()) + "");
         digits.setText(tok.getDigits() + "");
     }
-
+    */
     public static void showTXDetails(final Activity c, final TransactionDisplay tx) {
         MaterialDialog dialog = new MaterialDialog.Builder(c)
                 .customView(R.layout.dialog_tx_detail, true)
@@ -174,20 +175,13 @@ public class Dialogs {
         TextView otherAddressname = (TextView) view.findViewById(R.id.other_address);
         AutofitTextView myAddressaddr = (AutofitTextView) view.findViewById(R.id.walletaddr);
         AutofitTextView otherAddressaddr = (AutofitTextView) view.findViewById(R.id.other_addressaddr);
-        TextView amount = (TextView) view.findViewById(R.id.amount);
 
+        TextView amount = (TextView) view.findViewById(R.id.amount);
         TextView month = (TextView) view.findViewById(R.id.month);
-        TextView gasUsed = (TextView) view.findViewById(R.id.gasused);
-        TextView blocknr = (TextView) view.findViewById(R.id.blocknr);
-        TextView gasPrice = (TextView) view.findViewById(R.id.gasPrice);
-        TextView nonce = (TextView) view.findViewById(R.id.nonce);
-        TextView txcost = (TextView) view.findViewById(R.id.txcost);
-        TextView txcost2 = (TextView) view.findViewById(R.id.txcost2);
+        TextView txid = (TextView) view.findViewById(R.id.txid);
         Button openInBrowser = (Button) view.findViewById(R.id.openinbrowser);
         LinearLayout from = (LinearLayout) view.findViewById(R.id.from);
         LinearLayout to = (LinearLayout) view.findViewById(R.id.to);
-        TextView amountfiat = (TextView) view.findViewById(R.id.amountfiat);
-        TextView errormsg = (TextView) view.findViewById(R.id.errormsg);
 
         from.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -210,7 +204,7 @@ public class Dialogs {
         openInBrowser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String url = "https://etherscan.io/tx/" + tx.getTxHash();
+                String url = "https://test.taiji.io/tx/" + tx.getId();
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(url));
                 c.startActivity(i);
@@ -227,34 +221,17 @@ public class Dialogs {
         myAddressname.setText(myName);
         otherAddressname.setText(otherName);
 
-        errormsg.setVisibility(tx.isError() ? View.VISIBLE : View.GONE);
         myAddressaddr.setText(tx.getFromAddress());
         otherAddressaddr.setText(tx.getToAddress());
         SimpleDateFormat dateformat = new SimpleDateFormat("dd. MMMM yyyy, HH:mm:ss", Locale.getDefault());
-        month.setText(dateformat.format(tx.getDate()) + "");
-        blocknr.setText(tx.getBlock() + "");
-        gasUsed.setText(tx.getGasUsed() + "");
-        gasPrice.setText(tx.getGasprice() / 1000000000 + " Gwei");
-        nonce.setText(tx.getNounce() + "");
-        txcost.setText(
-                ExchangeCalculator.getInstance().displayEthNicelyExact(
-                        ExchangeCalculator.getInstance().weiToEther(tx.getGasUsed() * tx.getGasprice())
-                )
-                        + " Ξ"
-        );
-        txcost2.setText(
-                ExchangeCalculator.getInstance().convertToUsd(ExchangeCalculator.getInstance().weiToEther(tx.getGasUsed() * tx.getGasprice()))
-                        + " " + ExchangeCalculator.getInstance().getMainCurreny().getShorty()
-        );
-        amount.setText((tx.getAmount() > 0 ? "+ " : "- ") + Math.abs(tx.getAmount()) + " Ξ");
-        amount.setTextColor(c.getResources().getColor(tx.getAmount() > 0 ? R.color.etherReceived : R.color.etherSpent));
-        amountfiat.setText(ExchangeCalculator.getInstance().displayUsdNicely(
-                ExchangeCalculator.getInstance().convertToUsd(tx.getAmount()))
-                + " " + ExchangeCalculator.getInstance().getMainCurreny().getShorty());
+        month.setText(dateformat.format(tx.getTimestamp()) + "");
+        txid.setText(tx.getId());
+        amount.setText(tx.getType() + tx.getAmount() + " SH");
+        amount.setTextColor(c.getResources().getColor(tx.getType().equals("+") ? R.color.taijiReceived : R.color.taijiSpent));
     }
 
     private static String shortName(String addr) {
-        return "0x" + addr.substring(2, 8);
+        return addr.substring(4, 10);
     }
 
     public static void addWatchOnly(final MainActivity c) {
@@ -311,7 +288,7 @@ public class Dialogs {
                                 }
                             }, 100);
                 } else {
-                    c.snackError("Invalid Ethereum address!");
+                    c.snackError("Invalid Taiji address!");
                 }
                 dialog.dismiss();
             }
@@ -326,7 +303,7 @@ public class Dialogs {
                     detail.putExtra("ADDRESS", input.getText().toString());
                     c.startActivity(detail);
                 } else {
-                    c.snackError("Invalid Ethereum address!");
+                    c.snackError("Invalid Taiji address!");
                 }
                 dialog.cancel();
             }

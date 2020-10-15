@@ -150,7 +150,7 @@
                     android:textSize="20sp"
                     android:singleLine="true"
                     android:gravity="center"
-                    android:textColor="@color/etherReceived"
+                    android:textColor="@color/taijiReceived"
                     android:id="@+id/amount"
                     android:text="" />
 
@@ -169,15 +169,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#7aa1a1a1" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_marginTop="11dp"
-                android:text="@string/transaction_failed"
-                android:id="@+id/errormsg"
-                android:textColor="#BBA80A00" />
 
             <LinearLayout
                 android:layout_marginTop="14dp"
@@ -215,134 +206,14 @@
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
                     android:gravity="top"
-                    android:text="@string/block_height" />
+                    android:text="@string/txid" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
                     android:gravity="right"
-                    android:id="@+id/blocknr"
-                    android:text="" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_marginTop="6dp"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:gravity="top"
-                    android:text="@string/nonce" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:gravity="right"
-                    android:id="@+id/nonce"
-                    android:text="" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_marginTop="6dp"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:gravity="top"
-                    android:text="@string/gas_price" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:gravity="right"
-                    android:id="@+id/gasPrice"
-                    android:text="" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_marginTop="6dp"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:gravity="top"
-                    android:text="@string/gas_used" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:gravity="right"
-                    android:id="@+id/gasused"
-                    android:text="" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_marginTop="6dp"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:gravity="top"
-                    android:text="@string/tx_cost" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:gravity="right"
-                    android:id="@+id/txcost"
-                    android:text="" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_marginTop="5dp"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:gravity="top"
-                    android:text="" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:gravity="right"
-                    android:id="@+id/txcost2"
+                    android:id="@+id/txid"
                     android:text="" />
 
             </LinearLayout>

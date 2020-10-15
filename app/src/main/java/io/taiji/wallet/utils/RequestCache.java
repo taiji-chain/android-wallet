@@ -7,10 +7,10 @@ import java.util.HashMap;
  */
 public class RequestCache {
 
-    public static final String TYPE_TOKEN = "TOKEN_";
-    public static final String TYPE_TXS_NORMAL = "TXS_NORMAL_";
-    public static final String TYPE_TXS_INTERNAL = "TXS_INTERNAL_";
-    public static final String TYPE_BALANCES = "BALANCES_";
+    public static final String TYPE_TOKENS = "TOKENS";
+    public static final String TYPE_TXS = "TXS";
+    public static final String TYPE_BALANCES = "BALANCES";
+    public static final String TYPE_FEES = "FEES";
 
     private HashMap<String, String> map = new HashMap<String, String>();
     private static RequestCache instance;

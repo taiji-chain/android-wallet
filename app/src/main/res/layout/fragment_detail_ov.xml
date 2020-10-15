@@ -82,13 +82,13 @@
                                 android:textColor="@color/colorPrimaryDark" />
 
                             <TextView
-                                android:text="ETH"
                                 android:id="@+id/currency"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="18sp"
                                 android:gravity="top"
-                                android:textColor="@color/colorPrimaryDark" />
+                                android:text="SH"
+                                android:textColor="@color/colorPrimaryDark"
+                                android:textSize="18sp" />
                         </LinearLayout>
 
 
@@ -113,7 +113,7 @@
                 android:textSize="14sp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="18dp"
-                android:text="@string/ether_and_token" />
+                android:text="@string/taiji_and_token" />
 
             <View
                 android:layout_width="match_parent"

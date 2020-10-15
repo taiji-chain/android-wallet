@@ -221,7 +221,7 @@ public abstract class FragmentWalletsAbstract extends Fragment implements View.O
             TaijiAPI.getInstance().getBalances(storedwallets, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    Log.i("TAG", "Failure is called");
+                    Log.i("TAG", "Failure is called " + e.toString());
                     if (ac != null)
                         ac.snackError("Can't fetch account balances. Invalid response.");
                     final List<WalletDisplay> w = new ArrayList<WalletDisplay>();
@@ -256,6 +256,7 @@ public abstract class FragmentWalletsAbstract extends Fragment implements View.O
                             for (int i = 0; i < wallets.size(); i++) {
                                 balance += wallets.get(i).getBalance();
                             }
+                            Log.i("TAG", "the total balance is " + balance);
                             balanceView.setText(UnitCalculator.getInstance().displayBalanceNicely(UnitCalculator.getInstance().convertUnit(balance, UnitCalculator.getInstance().getCurrent().getUnit())) + " " + UnitCalculator.getInstance().getCurrent().getName());
                             onItemsLoadComplete();
                         }

@@ -142,21 +142,6 @@ public class ExchangeCalculator {
         return Math.floor(balance * getUSDPrice() * 100) / 100;
     }
 
-    /**
-     * Used for DetailFragmentOverview "Overall Balance"
-     *
-     * @param token List of all tokens on an address
-     * @return ether price of all tokens combined (exclusive ether balance itself)
-     */
-    public double sumUpTokenEther(List<TokenDisplay> token) {
-        double summedEther = 0;
-        for (TokenDisplay t : token) {
-            if (t.getShorty().equals("ETH")) continue;
-            summedEther += convertTokenToEther(t.getBalanceDouble(), t.getUsdprice());
-        }
-        return summedEther;
-    }
-
     public double getUSDPrice() {
         return Math.floor(conversionNames[2].getRate() * 100) / 100;
     }
