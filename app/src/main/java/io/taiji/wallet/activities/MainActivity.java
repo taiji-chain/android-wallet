@@ -30,7 +30,6 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.security.Provider;
 import java.security.Security;
 
@@ -45,7 +44,6 @@ import io.taiji.wallet.services.NotificationLauncher;
 import io.taiji.wallet.services.WalletGenRunnerService;
 import io.taiji.wallet.utils.AddressNameConverter;
 import io.taiji.wallet.utils.Dialogs;
-import io.taiji.wallet.utils.ExchangeCalculator;
 import io.taiji.wallet.utils.ExternalStorageHandler;
 import io.taiji.wallet.utils.OwnWalletUtils;
 import io.taiji.wallet.utils.Settings;

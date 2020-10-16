@@ -58,11 +58,6 @@ public class TaijiAPI {
         get(url, b);
     }
 
-
-    public void getEtherPrice(Callback b) throws IOException {
-        get("https://api.etherscan.io/api?module=stats&action=ethprice&apikey=" + token, b);
-    }
-
     /**
      * Get token balances via token-reader service
      *
@@ -141,18 +136,6 @@ public class TaijiAPI {
         get("https://api.etherscan.io/api?module=proxy&action=eth_getTransactionCount&address=" + address + "&tag=latest&apikey=" + token, b);
     }
 
-
-    /**
-     * Guys please don't abuse this key. I put this release together in the middle of the night, migrating some third party api
-     * changes and don't want to bother with obfuscating this key.
-     * It's a free plan, limited to 10k requests and is intended for Lunary users only.
-     * Please be fair and don't missuse this key. If not for my sake but the the sake of those users.
-     * @param b
-     * @throws IOException
-     */
-    public void getPriceConversionRates(Callback b) throws IOException {
-        get("http://data.fixer.io/api/latest?access_key=6731fb62377f28c429b246c2184a6a46", b);
-    }
 
     public void getBalances(ArrayList<StorableWallet> addresses, Callback b) throws IOException {
         String url = "https://test.taiji.io/account?addresses=";

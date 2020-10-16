@@ -33,7 +33,6 @@ import com.google.android.material.appbar.AppBarLayout;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +44,6 @@ import okhttp3.Callback;
 import okhttp3.Response;
 import io.taiji.wallet.R;
 import io.taiji.wallet.activities.SendActivity;
-import io.taiji.wallet.data.CurrencyEntry;
 import io.taiji.wallet.data.TokenDisplay;
 import io.taiji.wallet.data.WatchWallet;
 import io.taiji.wallet.interfaces.LastIconLoaded;
@@ -54,7 +52,6 @@ import io.taiji.wallet.utils.AddressNameConverter;
 import io.taiji.wallet.utils.AppBarStateChangeListener;
 import io.taiji.wallet.utils.Blockies;
 import io.taiji.wallet.utils.Dialogs;
-import io.taiji.wallet.utils.ExchangeCalculator;
 import io.taiji.wallet.utils.RequestCache;
 import io.taiji.wallet.utils.ResponseParser;
 import io.taiji.wallet.utils.TokenAdapter;

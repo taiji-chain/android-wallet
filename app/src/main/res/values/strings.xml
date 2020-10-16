@@ -190,7 +190,7 @@
     <string name="dialog_no_wallets_text">In order to request funds you need a wallet or a watch only address.</string>
     <string name="dialog_no_wallets_found">No Wallets Found</string>
     <string name="dialog_no_wallets_found_text">Please place the wallet you want to import inside the Taiji folder and make sure it is correctly named. When importing from other desktop client you don\'t have to rename your wallet.</string>
-    <string name="notification_ticker">Incoming Ether Transaction…</string>
+    <string name="notification_ticker">Incoming Taiji Transaction…</string>
     <string name="notification_transfersuc">Transfer successful</string>
     <string name="notification_transferfail">Transfer Failed</string>
     <string name="notification_transferingticker">Transferring Ether…</string>

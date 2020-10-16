@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
@@ -17,8 +16,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Iterator;
 
 import okhttp3.Call;
@@ -28,7 +25,6 @@ import io.taiji.wallet.R;
 import io.taiji.wallet.activities.MainActivity;
 import io.taiji.wallet.network.TaijiAPI;
 import io.taiji.wallet.utils.Blockies;
-import io.taiji.wallet.utils.ExchangeCalculator;
 import io.taiji.wallet.utils.WalletStorage;
 
 public class NotificationService extends IntentService {
@@ -57,23 +53,20 @@ public class NotificationService extends IntentService {
                     try {
                         data = new JSONArray(response.body().string());
                         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(NotificationService.this);
-
                         boolean notify = false;
-                        BigInteger amount = new BigInteger("0");
+                        long amount = 0L;
                         String address = "";
                         SharedPreferences.Editor editor = preferences.edit();
                         for (int i = 0; i < data.length(); i++) {
                             JSONObject addressMap = data.getJSONObject(i);
                             Iterator<String> keys = addressMap.keys();
                             address = keys.next();
-                            Log.i("TAG", "address = " + address);
                             JSONObject currencyMap = (JSONObject)addressMap.get(address);
-                            Log.i("TAG", "balance = " + currencyMap.getString("taiji"));
                             String balance = currencyMap.getString("taiji");
                             if (!preferences.getString(address, balance).equals(balance)) {
-                                if (new BigInteger(preferences.getString(address, balance)).compareTo(new BigInteger(balance)) < 1) {
+                                if (new Long(preferences.getString(address, balance)).compareTo(new Long(balance)) < 1) {
                                     notify = true;
-                                    amount = amount.add((new BigInteger(balance).subtract(new BigInteger(preferences.getString(address, "0")))));
+                                    amount = amount + (new Long(balance) - (new Long(preferences.getString(address, "0"))));
                                 }
                             }
                             editor.putString(address, balance);
@@ -81,7 +74,7 @@ public class NotificationService extends IntentService {
                         editor.commit();
                         if (notify) {
                             try {
-                                String amountS = new BigDecimal(amount).divide(ExchangeCalculator.ONE_ETHER, 4, BigDecimal.ROUND_DOWN).toPlainString();
+                                String amountS = Long.toString(amount);
                                 sendNotification(address, amountS);
                             } catch (Exception e) {
 
@@ -108,7 +101,7 @@ public class NotificationService extends IntentService {
                 .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
                 .setContentTitle(this.getResources().getString(R.string.notification_title))
                 .setAutoCancel(true)
-                .setContentText(amount + " ETH");
+                .setContentText(amount + " SH");
 
         if (android.os.Build.VERSION.SDK_INT >= 18) // Android bug in 4.2, just disable it for everyone then...
             builder.setVibrate(new long[]{1000, 1000});

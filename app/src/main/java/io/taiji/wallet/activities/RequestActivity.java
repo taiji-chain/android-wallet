@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -26,7 +25,6 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.networknt.taiji.utility.Converter;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +33,6 @@ import io.taiji.wallet.data.UnitEntry;
 import io.taiji.wallet.data.WalletDisplay;
 import io.taiji.wallet.interfaces.StorableWallet;
 import io.taiji.wallet.utils.AddressNameConverter;
-import io.taiji.wallet.utils.ExchangeCalculator;
 import io.taiji.wallet.utils.UnitCalculator;
 import io.taiji.wallet.utils.WalletAdapter;
 import io.taiji.wallet.utils.WalletStorage;
