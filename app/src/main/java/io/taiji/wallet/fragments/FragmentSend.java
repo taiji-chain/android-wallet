@@ -187,7 +187,7 @@ public class FragmentSend extends Fragment {
                             public void canceled() {}
                         });
                     } else {
-                        ac.snackError(getString(R.string.err_send_not_enough_ether));
+                        ac.snackError(getString(R.string.err_send_not_enough_taiji));
                     }
                 } catch (Exception e) {
                     ac.snackError(getString(R.string.err_send_invalidamount));
@@ -327,6 +327,7 @@ public class FragmentSend extends Fragment {
 
     private void sendTaiji(String password, String fromAddress) {
         Intent txService = new Intent(ac, TransactionService.class);
+        txService.putExtra("CURRENCY", "taiji");
         txService.putExtra("FROM_ADDRESS", fromAddress);
         txService.putExtra("TO_ADDRESS", toAddress.getText().toString());
         txService.putExtra("AMOUNT", curAmount);

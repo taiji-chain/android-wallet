@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
@@ -11,6 +12,10 @@ import org.bouncycastle.util.encoders.Hex;
 import org.json.JSONException;
 import org.json.JSONObject;
 import com.networknt.taiji.crypto.Credentials;
+import com.networknt.taiji.crypto.LedgerEntry;
+import com.networknt.taiji.crypto.RawTransaction;
+import com.networknt.taiji.crypto.SignedTransaction;
+import com.networknt.taiji.crypto.TransactionManager;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -32,118 +37,48 @@ public class TransactionService extends IntentService {
         super("Transaction Service");
     }
 
-    private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
-    public static String bytesToHex(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        for ( int j = 0; j < bytes.length; j++ ) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-        }
-        return new String(hexChars);
-    }
-
     @Override
     protected void onHandleIntent(Intent intent) {
         sendNotification();
         try {
             String fromAddress = intent.getStringExtra("FROM_ADDRESS");
             final String toAddress = intent.getStringExtra("TO_ADDRESS");
-            final String amount = intent.getStringExtra("AMOUNT");
-            final String gas_price = intent.getStringExtra("GAS_PRICE");
-            final String gas_limit = intent.getStringExtra("GAS_LIMIT");
-            final String data = intent.getStringExtra("DATA");
+            final Long amount = intent.getLongExtra("AMOUNT", 0);
+            final Long bankFee = intent.getLongExtra("BANK_FEE", 0);
+            final String bankAddress = intent.getStringExtra("BANK_ADDRESS");
             String password = intent.getStringExtra("PASSWORD");
-
-            final Credentials keys = WalletStorage.getInstance(getApplicationContext()).getFullWallet(getApplicationContext(), password, fromAddress);
-
-            TaijiAPI.getInstance().getNonceForAddress(fromAddress, new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    error("Can't connect to network, retry it later");
-                }
-
-                @Override
-                public void onResponse(Call call, final Response response) throws IOException {
-                    try {
-                        JSONObject o = new JSONObject(response.body().string());
-                        BigInteger nonce = new BigInteger(o.getString("result").substring(2), 16);
-                        /*
-                        RawTransaction tx = RawTransaction.createTransaction(
-                                nonce,
-                                new BigInteger(gas_price),
-                                new BigInteger(gas_limit),
-                                toAddress,
-                                new BigDecimal(amount).multiply(ExchangeCalculator.ONE_ETHER).toBigInteger(),
-                                data
-                        );
-
-                        Log.d("txx",
-                                "Nonce: " + tx.getNonce() + "\n" +
-                                        "gasPrice: " + tx.getGasPrice() + "\n" +
-                                        "gasLimit: " + tx.getGasLimit() + "\n" +
-                                        "To: " + tx.getTo() + "\n" +
-                                        "Amount: " + tx.getValue() + "\n" +
-                                        "Data: " + tx.getData()
-                        );
-
-                        byte[] signed = TransactionEncoder.signMessage(tx, keys);
-
-                        Log.d("txx", "TX: "+bytesToHex(signed));
-
-                        forwardTX(signed);
-                         */
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        error("Can't connect to network, retry it later");
-                    }
-                }
-            });
-
+            String currency = intent.getStringExtra("CURRENCY");
+            final Credentials credentials = WalletStorage.getInstance(getApplicationContext()).getFullWallet(getApplicationContext(), password, fromAddress);
+            LedgerEntry feeEntry = new LedgerEntry(bankAddress, bankFee);
+            LedgerEntry ledgerEntry = new LedgerEntry(toAddress, amount);
+            RawTransaction rtx = new RawTransaction(currency);
+            rtx.addCreditEntry(toAddress, ledgerEntry);
+            rtx.addDebitEntry(credentials.getAddress(), ledgerEntry);
+            rtx.addCreditEntry(bankAddress, feeEntry);
+            rtx.addDebitEntry(credentials.getAddress(), feeEntry);
+            SignedTransaction stx = TransactionManager.signTransaction(rtx, credentials);
+            String res = TaijiAPI.getInstance().postTx(fromAddress, stx);
+            Log.i("TAG", "response = " + res);
+            JSONObject object = new JSONObject(res);
+            result(object.getString("statusCode"), object.getString("code"), object.getString("message"), object.getString("description"));
         } catch (Exception e) {
-            error("Invalid Wallet Password!");
             e.printStackTrace();
+            error("Invalid Wallet Password!");
         }
     }
 
-    private void forwardTX(byte[] signed) throws IOException {
-        TaijiAPI.getInstance().forwardTransaction("0x" + Hex.toHexString(signed), new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                error("Can't connect to network, retry it later");
-            }
-
-            @Override
-            public void onResponse(Call call, final Response response) throws IOException {
-                String received = response.body().string();
-                try {
-                    suc(new JSONObject(received).getString("result"));
-                } catch (Exception e) {
-                    // Advanced error handling. If etherscan returns error message show the shortened version in notification. Else abbort with unknown error
-                    try {
-                        String errormsg = new JSONObject(received).getJSONObject("error").getString("message");
-                        if (errormsg.indexOf(".") > 0)
-                            errormsg = errormsg.substring(0, errormsg.indexOf("."));
-                        error(errormsg); // f.E Insufficient funds
-                    } catch (JSONException e1) {
-                        error("Unknown error occured");
-                    }
-                }
-            }
-        });
-    }
-
-    private void suc(String hash) {
+    private void result(String statusCode, String code, String message, String description) {
         builder
                 .setContentTitle(getString(R.string.notification_transfersuc))
                 .setProgress(100, 100, false)
                 .setOngoing(false)
                 .setAutoCancel(true)
-                .setContentText("");
+                .setContentText(description);
 
         Intent main = new Intent(this, MainActivity.class);
-        main.putExtra("STARTAT", 2);
-        main.putExtra("TXHASH", hash);
+        main.putExtra("STATUS", statusCode);
+        main.putExtra("DESC", description);
+
 
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                 main, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -164,8 +99,6 @@ public class TransactionService extends IntentService {
                 .setContentText(err);
 
         Intent main = new Intent(this, MainActivity.class);
-        main.putExtra("STARTAT", 2);
-
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                 main, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(contentIntent);
@@ -182,7 +115,7 @@ public class TransactionService extends IntentService {
                 .setColor(0x2d435c)
                 .setTicker(getString(R.string.notification_transferingticker))
                 .setContentTitle(getString(R.string.notification_transfering_title))
-                .setContentText(getString(R.string.notification_might_take_a_minute))
+                .setContentText(getString(R.string.notification_check_notifiication))
                 .setOngoing(true)
                 .setProgress(0, 0, true);
         final NotificationManager mNotifyMgr =
@@ -190,6 +123,5 @@ public class TransactionService extends IntentService {
 
         mNotifyMgr.notify(mNotificationId, builder.build());
     }
-
 
 }

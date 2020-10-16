@@ -1,30 +1,25 @@
 package io.taiji.wallet.network;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 
-import java.io.BufferedInputStream;
+import com.networknt.taiji.crypto.SignedTransaction;
+
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+import io.taiji.wallet.interfaces.StorableWallet;
+import io.taiji.wallet.utils.OwnWalletUtils;
+import io.taiji.wallet.utils.RequestCache;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import io.taiji.wallet.interfaces.LastIconLoaded;
-import io.taiji.wallet.interfaces.StorableWallet;
-import io.taiji.wallet.utils.Key;
-import io.taiji.wallet.utils.RequestCache;
-import io.taiji.wallet.utils.TokenIconCache;
 
 public class TaijiAPI {
 
@@ -38,11 +33,37 @@ public class TaijiAPI {
         return instance;
     }
 
+    OkHttpClient client = new OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .build();
+
+    public String postTx(String address, SignedTransaction stx) {
+        String url = "https://test.taiji.io/tx";
+        String bankId = address.substring(0, 4);
+        try {
+            String s = OwnWalletUtils.objectMapper.writeValueAsString(stx);
+            RequestBody body = RequestBody.create(
+                    MediaType.parse("application/json"), s);
+            Request request = new Request.Builder()
+            .url(url)
+            .addHeader("env_tag", bankId)
+            .post(body)
+            .build();
+            Call call = client.newCall(request);
+            Response response = call.execute();
+            return response.body().string();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.i("TAG", "Exception: " + e.getMessage());
+            return e.getMessage();
+        }
+    }
+
     /**
-     * Retrieve all normal ether transactions from address (excluding contract calls etc, @see rehanced.com.simpleetherwallet.network.EtherscanAPI#getInternalTransactions() )
-     *
-     * @param address Ether address
-     * @param b       Network callback to @see rehanced.com.simpleetherwallet.fragments.FragmentTransactions#update() or @see rehanced.com.simpleetherwallet.fragments.FragmentTransactionsAll#update()
+     * @param address Taiji address
+     * @param b       Network callback to @see
      * @param force   Whether to force (true) a network call or use cache (false). Only true if user uses swiperefreshlayout
      * @throws IOException Network exceptions
      */
@@ -86,46 +107,6 @@ public class TaijiAPI {
         get("https://test.taiji.io/fee/taiji", b);
     }
 
-    /**
-     * Download and save token icon in permanent image cache (TokenIconCache)
-     *
-     * @param c         Application context, used to load TokenIconCache if reinstanced
-     * @param tokenName Name of token
-     * @param lastToken Boolean defining whether this is the last icon to download or not. If so callback is called to refresh recyclerview (notifyDataSetChanged)
-     * @param callback  Callback to @see rehanced.com.simpleetherwallet.fragments.FragmentDetailOverview#onLastIconDownloaded()
-     * @throws IOException Network exceptions
-     */
-    public void loadTokenIcon(final Context c, String tokenName, final boolean lastToken, final LastIconLoaded callback) throws IOException {
-        if (tokenName.indexOf(" ") > 0)
-            tokenName = tokenName.substring(0, tokenName.indexOf(" "));
-        if (TokenIconCache.getInstance(c).contains(tokenName)) return;
-
-        if(tokenName.equalsIgnoreCase("OMGToken"))
-            tokenName = "omise";
-        else if(tokenName.equalsIgnoreCase("0x"))
-            tokenName = "0xtoken_28";
-
-        final String tokenNamef = tokenName;
-        get("https://etherscan.io//token/images/" + tokenNamef + ".PNG", new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (c == null) return;
-                ResponseBody in = response.body();
-                InputStream inputStream = in.byteStream();
-                BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-                final Bitmap bitmap = BitmapFactory.decodeStream(bufferedInputStream);
-                TokenIconCache.getInstance(c).put(c, tokenNamef, new BitmapDrawable(c.getResources(), bitmap).getBitmap());
-                // if(lastToken) // TODO: resolve race condition
-                callback.onLastIconDownloaded();
-            }
-        });
-    }
-
-
 
     public void getBalance(String address, Callback b) throws IOException {
         get("https://test.taiji.io/account/" + address, b);
@@ -133,7 +114,7 @@ public class TaijiAPI {
 
 
     public void getNonceForAddress(String address, Callback b) throws IOException {
-        get("https://api.etherscan.io/api?module=proxy&action=eth_getTransactionCount&address=" + address + "&tag=latest&apikey=" + token, b);
+        get("https://test.taiji.io/api?module=proxy&action=eth_getTransactionCount&address=" + address + "&tag=latest&apikey=" + token, b);
     }
 
 
@@ -147,19 +128,9 @@ public class TaijiAPI {
     }
 
 
-    public void forwardTransaction(String raw, Callback b) throws IOException {
-        get("https://api.etherscan.io/api?module=proxy&action=eth_sendRawTransaction&hex=" + raw + "&apikey=" + token, b);
-    }
-
-
     public void get(String url, Callback b) throws IOException {
         Request request = new Request.Builder()
                 .url(url)
-                .build();
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
                 .build();
 
         client.newCall(request).enqueue(b);
@@ -167,7 +138,6 @@ public class TaijiAPI {
 
 
     private TaijiAPI() {
-        token = new Key("").toString();
     }
 
 }

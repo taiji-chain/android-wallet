@@ -269,7 +269,7 @@ public class Dialogs {
 
                 InputMethodManager inputMgr = (InputMethodManager) input.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMgr.hideSoftInputFromWindow(input.getWindowToken(), 0);
-                if (input.getText().toString().length() == 42 && input.getText().toString().startsWith("0x")) {
+                if (input.getText().toString().length() == 40) {
                     final boolean suc = WalletStorage.getInstance(c).add(new WatchWallet(input.getText().toString()), c);
                     new Handler().postDelayed(
                             new Runnable() {
@@ -298,7 +298,7 @@ public class Dialogs {
             public void onClick(DialogInterface dialog, int which) {
                 InputMethodManager inputMgr = (InputMethodManager) input.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMgr.hideSoftInputFromWindow(input.getWindowToken(), 0);
-                if (input.getText().toString().length() == 42 && input.getText().toString().startsWith("0x")) {
+                if (input.getText().toString().length() == 40) {
                     Intent detail = new Intent(c, AddressDetailActivity.class);
                     detail.putExtra("ADDRESS", input.getText().toString());
                     c.startActivity(detail);

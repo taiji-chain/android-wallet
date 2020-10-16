@@ -81,7 +81,7 @@ public class MainActivity extends SecureAppCompatActivity implements NetworkUpda
         // ------------------------- Material Drawer ---------------------------------
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(R.drawable.ethereum_bg)
+                .withHeaderBackground(R.drawable.taiji_bg)
                 .build();
 
         DrawerBuilder wip = new DrawerBuilder()
@@ -252,16 +252,16 @@ public class MainActivity extends SecureAppCompatActivity implements NetworkUpda
             if (resultCode == RESULT_OK) {
                 byte type = data.getByteExtra("TYPE", io.taiji.wallet.activities.QRScanActivity.SCAN_ONLY);
                 if (type == io.taiji.wallet.activities.QRScanActivity.SCAN_ONLY) {
-                    if (data.getStringExtra("ADDRESS").length() != 42 || !data.getStringExtra("ADDRESS").startsWith("0x")) {
-                        snackError("Invalid Ethereum address!");
+                    if (data.getStringExtra("ADDRESS").length() != 40) {
+                        snackError("Invalid Taiji address!");
                         return;
                     }
                     Intent watch = new Intent(this, io.taiji.wallet.activities.AddressDetailActivity.class);
                     watch.putExtra("ADDRESS", data.getStringExtra("ADDRESS"));
                     startActivity(watch);
                 } else if (type == io.taiji.wallet.activities.QRScanActivity.ADD_TO_WALLETS) {
-                    if (data.getStringExtra("ADDRESS").length() != 42 || !data.getStringExtra("ADDRESS").startsWith("0x")) {
-                        snackError("Invalid Ethereum address!");
+                    if (data.getStringExtra("ADDRESS").length() != 40) {
+                        snackError("Invalid Taiji address!");
                         return;
                     }
                     final boolean suc = WalletStorage.getInstance(this).add(new WatchWallet(data.getStringExtra("ADDRESS")), this);

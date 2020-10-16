@@ -140,8 +140,8 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
             }
         });
 
-        FloatingActionButton send_ether = (FloatingActionButton) rootView.findViewById(R.id.send_ether); // Send Ether to
-        send_ether.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton send_taiji = (FloatingActionButton) rootView.findViewById(R.id.send_taiji); // Send Taiji to
+        send_taiji.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (WalletStorage.getInstance(ac).getFullOnly().size() == 0) {
@@ -154,8 +154,8 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
             }
         });
 
-        FloatingActionButton send_ether_from = (FloatingActionButton) rootView.findViewById(R.id.send_ether_from);
-        send_ether_from.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton send_taiji_from = (FloatingActionButton) rootView.findViewById(R.id.send_taiji_from);
+        send_taiji_from.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (WalletStorage.getInstance(ac).getFullOnly().size() == 0) {
@@ -187,7 +187,7 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
             fab_add.setVisibility(View.GONE);
         }
         if (!WalletStorage.getInstance(ac).isFullWallet(taijiAddress)) {
-            send_ether_from.setVisibility(View.GONE);
+            send_taiji_from.setVisibility(View.GONE);
         }
 
         if (ac.getAppBar() != null) {
@@ -357,7 +357,7 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
     public void onClick(View view) {
         if (ac == null) return;
         int itemPosition = recyclerView.getChildLayoutPosition(view);
-        if (itemPosition == 0 || itemPosition >= token.size()) return;  // if clicked on Ether
+        if (itemPosition == 0 || itemPosition >= token.size()) return;  // if clicked on Taiji
         //Dialogs.showTokenetails(ac, token.get(itemPosition));
     }
 

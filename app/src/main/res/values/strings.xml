@@ -11,7 +11,7 @@
     <string name="fab_gen_new">Generate New Wallet</string>
     <string name="fab_request">Request</string>
     <string name="fab_send">Send</string>
-    <string name="fab_sendether">Send Ether</string>
+    <string name="fab_sendtaiji">Send Taiji</string>
     <string name="fab_setwalletname">Set Wallet Name</string>
     <string name="drawer_import">Import Wallets</string>
     <string name="drawer_about">About Us</string>
@@ -23,14 +23,14 @@
 
     <string name="main_ac_wallet_added_suc">Your wallet was added successfully</string>
     <string name="main_ac_wallet_added_er">Wallet was already added</string>
-    <string name="main_ac_wallet_added_fatal">Err Not a valid ethereum address</string>
+    <string name="main_ac_wallet_added_fatal">Err Not a valid taiji address</string>
     <string name="detail_acc_name_changed_suc">Wallet successfully renamed</string>
     <string name="title_activity_settings">Settings</string>
 
     <string name="pref_header_general">General</string>
 
     <string name="pref_title_social_recommendations">Show zero amount transactions</string>
-    <string name="pref_description_social_recommendations">Whether to hide contract calls without any ether amount or not</string>
+    <string name="pref_description_social_recommendations">Whether to hide contract calls without any taiji amount or not</string>
 
 
     <string name="pref_title_start">Wallet as default tab</string>
@@ -123,7 +123,7 @@
     <string name="app_intro_title">Taiji Wallet</string>
     <string name="app_intro_please_agree">Please read and agree to the terms of service before proceeding</string>
     <string name="app_intro_iagree">I agree to terms of service</string>
-    <string name="fragment_send_ether_amount">Amount</string>
+    <string name="fragment_send_taiji_amount">Amount</string>
     <string name="fragment_send_cheaper">Cheaper</string>
     <string name="fragment_send_faster">Faster</string>
     <string name="fragment_send_total">Total</string>
@@ -165,7 +165,7 @@
     <string name="trans_menu_viewreceiver">View Receiver Address</string>
     <string name="trans_menu_openinb">Open in Browser</string>
     <string name="trans_no_trans_found">No transactions found for this address.</string>
-    <string name="err_send_not_enough_ether">Not enough Ether on that Address</string>
+    <string name="err_send_not_enough_taiji">Not enough Taiji on that Address</string>
     <string name="err_send_invalidamount">Invalid Amount</string>
     <string name="err_send_noreceiver">No receiver specified</string>
     <string name="err_send_noamount">No amount specified</string>
@@ -193,9 +193,9 @@
     <string name="notification_ticker">Incoming Taiji Transaction…</string>
     <string name="notification_transfersuc">Transfer successful</string>
     <string name="notification_transferfail">Transfer Failed</string>
-    <string name="notification_transferingticker">Transferring Ether…</string>
-    <string name="notification_transfering_title">Transferring Ether</string>
-    <string name="notification_might_take_a_minute">This might take a minute</string>
+    <string name="notification_transferingticker">Transferring Taiji…</string>
+    <string name="notification_transfering_title">Transferring Taiji</string>
+    <string name="notification_check_notifiication">Please check notification for confirmation</string>
     <string name="notification_wallgen_maytake">This may take a couple minutes</string>
     <string name="notification_wallgen_title">Generating Wallet…</string>
     <string name="notification_wallimp_title">Importing Wallet…</string>
@@ -208,8 +208,8 @@
     <string name="prefs_set_pw">Set Password</string>
     <string name="prefs_set_pw_sum">Specify your login pattern</string>
     <string name="prefs_cat_security">Security</string>
-    <string name="fab_sendether_from">Send Ether From</string>
-    <string name="fab_sendether_to">Send Ether To</string>
+    <string name="fab_sendtaiji_from">Send Taiji From</string>
+    <string name="fab_sendtaiji_to">Send Taiji To</string>
     <string name="open_in_browser">Open in Browser</string>
     <string name="tx_cost">TX Cost</string>
     <string name="gas_used">Gas Used</string>

@@ -130,7 +130,7 @@
             android:screenOrientation="portrait"
             android:label="@string/title_activity_main">
             <intent-filter>
-                <action android:name="rehanced.com.simpleetherwallet.activities.SetAppLockActivity" />
+                <action android:name="io.taiji.wallet.activities.SetAppLockActivity" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

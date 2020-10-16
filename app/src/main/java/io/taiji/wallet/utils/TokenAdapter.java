@@ -28,7 +28,7 @@ public class TokenAdapter extends RecyclerView.Adapter<TokenAdapter.MyViewHolder
     private int position;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView name, nativebalance, etherbalance, shorty;
+        public TextView name, nativebalance, taijibalance, shorty;
         public TextView image;
         public LinearLayout container;
 
@@ -37,7 +37,7 @@ public class TokenAdapter extends RecyclerView.Adapter<TokenAdapter.MyViewHolder
             nativebalance = (TextView) view.findViewById(R.id.nativebalance);
             name = (TextView) view.findViewById(R.id.tokenname);
             image = (TextView) view.findViewById(R.id.addressimage);
-            etherbalance = (TextView) view.findViewById(R.id.etherbalance);
+            taijibalance = (TextView) view.findViewById(R.id.taijibalance);
             container = (LinearLayout) view.findViewById(R.id.container);
         }
 

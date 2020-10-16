@@ -127,7 +127,7 @@ public class WalletStorage {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(c);
         Map<String, ?> allEntries = preferences.getAll();
         for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-            if (entry.getKey().length() == 42 && !mapdb.contains(entry.getKey()))
+            if (entry.getKey().length() == 40 && !mapdb.contains(entry.getKey()))
                 add(new WatchWallet(entry.getKey()), c);
         }
         if (mapdb.size() > 0)

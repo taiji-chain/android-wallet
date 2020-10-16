@@ -125,9 +125,6 @@ public class ResponseParser {
                 e.printStackTrace();
             }
             */
-            // Download icon and cache it
-            TaijiAPI.getInstance().loadTokenIcon(c, currentToken.getJSONObject("tokenInfo").getString("name"), i == data.length() - 1, callback);
-
         }
         return display;
     }

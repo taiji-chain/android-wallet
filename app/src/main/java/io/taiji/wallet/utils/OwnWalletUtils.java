@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.security.KeyPair;
 
 public class OwnWalletUtils extends WalletUtils {
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    public static ObjectMapper objectMapper = new ObjectMapper();
 
     /*
     public static String generateFullNewWalletFile(String password, File destinationDirectory, String chainId)
