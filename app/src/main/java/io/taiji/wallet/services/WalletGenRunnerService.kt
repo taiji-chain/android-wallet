@@ -45,7 +45,7 @@ class WalletGenRunnerService : Service() {
     // for android version Oreo and above, we first need to create a notification channel
     private fun createNotificationChannel() {
         // you can create multiple channels and deliver different type of notifications through different channels
-        val notificationChannel = NotificationChannel("progress_channel", "Progress", NotificationManager.IMPORTANCE_DEFAULT)
+        val notificationChannel = NotificationChannel("progress_channel", "Progress", NotificationManager.IMPORTANCE_LOW)
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(notificationChannel)
     }
@@ -54,6 +54,8 @@ class WalletGenRunnerService : Service() {
         super.onCreate()
         Log.i("TAG", "onCreate is called")
         isRunning = true
+        createNotificationChannel()
+        startForeground(notificationId, notification)
         var count = 0
         var keyPair : ECKeyPair
         CoroutineScope(Dispatchers.Default).launch {
