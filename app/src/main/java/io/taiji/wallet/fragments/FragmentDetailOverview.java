@@ -58,6 +58,7 @@ import io.taiji.wallet.utils.TokenAdapter;
 import io.taiji.wallet.utils.WalletStorage;
 
 public class FragmentDetailOverview extends Fragment implements View.OnClickListener, View.OnCreateContextMenuListener, LastIconLoaded {
+    private static final String TAG = FragmentDetailOverview.class.getSimpleName();
 
     private AddressDetailActivity ac;
     private String taijiAddress = "";
@@ -228,10 +229,14 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.i("TAG", "response = " + response);
+                Log.i(TAG, "response = " + response);
                 long bal;
                 try {
-                    bal = new Long(ResponseParser.parseBalance(response.body().string()));
+                    if(response.code() < 400) {
+                        bal = new Long(ResponseParser.parseBalance(response.body().string()));
+                    } else {
+                        bal = 0L;
+                    }
                     balanceLong = bal;
                 } catch (JSONException e) {
                     ac.runOnUiThread(new Runnable() {
@@ -268,10 +273,14 @@ public class FragmentDetailOverview extends Fragment implements View.OnClickList
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
                 try {
-                    String restring = response.body().string();
-                    if (restring != null && restring.length() > 2)
-                        RequestCache.getInstance().put(RequestCache.TYPE_TOKENS, taijiAddress, restring);
-                    token.addAll(ResponseParser.parseTokens(ac, restring, FragmentDetailOverview.this));
+                    if(response.code() < 400) {
+                        String restring = response.body().string();
+                        if (restring != null && restring.length() > 2)
+                            RequestCache.getInstance().put(RequestCache.TYPE_TOKENS, taijiAddress, restring);
+                        token.addAll(ResponseParser.parseTokens(ac, restring, FragmentDetailOverview.this));
+                    } else {
+                        Log.i(TAG, "response = " + response);
+                    }
                     ac.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
