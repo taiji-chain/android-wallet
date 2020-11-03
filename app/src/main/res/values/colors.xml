@@ -29,5 +29,6 @@
 
     <color name="chartFilled">#6e8caf</color>
     <color name="colorPrimaryLittleDarker">#506d8f</color>
+    <color name="badge_color">#F4511E</color>
 
 </resources>

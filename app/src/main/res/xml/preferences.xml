@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='utf-8' standalone='yes' ?>
 <map>
     <string name="0000e5099B5aa298ea822dc05aB5999f8926677C">100000000000</string>
+    <boolean name="testnetSwitch" value="true" />
     <boolean name="zeroAmountSwitch" value="false" />
     <boolean name="use_app_lock" value="false" />
     <string name="sync_frequency">6</string>

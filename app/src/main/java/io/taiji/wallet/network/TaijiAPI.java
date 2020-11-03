@@ -1,5 +1,7 @@
 package io.taiji.wallet.network;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.networknt.taiji.crypto.SignedTransaction;
@@ -8,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+import io.taiji.wallet.WalletApplication;
 import io.taiji.wallet.interfaces.StorableWallet;
 import io.taiji.wallet.utils.OwnWalletUtils;
 import io.taiji.wallet.utils.RequestCache;
@@ -23,7 +26,7 @@ import okhttp3.ResponseBody;
 
 public class TaijiAPI {
 
-    private String token;
+    private String server;
 
     private static TaijiAPI instance;
 
@@ -40,7 +43,7 @@ public class TaijiAPI {
             .build();
 
     public String postTx(String address, SignedTransaction stx) {
-        String url = "https://test.taiji.io/tx";
+        String url = server + "/tx";
         String bankId = address.substring(0, 4);
         try {
             String s = OwnWalletUtils.objectMapper.writeValueAsString(stx);
@@ -68,7 +71,7 @@ public class TaijiAPI {
      * @throws IOException Network exceptions
      */
     public void getTransactions(String address, Callback b, boolean force) throws IOException {
-        String url = "https://test.taiji.io/transaction/" + address + "/taiji?offset=0&limit=10";
+        String url = server + "/transaction/" + address + "/taiji?offset=0&limit=10";
         if (!force && RequestCache.getInstance().contains(RequestCache.TYPE_TXS, address)) {
             b.onResponse(null, new Response.Builder().code(200).message("").request(new Request.Builder()
                     .url(url)
@@ -90,36 +93,36 @@ public class TaijiAPI {
     public void getTokenBalances(String address, Callback b, boolean force) throws IOException {
         if (!force && RequestCache.getInstance().contains(RequestCache.TYPE_TOKENS, address)) {
             b.onResponse(null, new Response.Builder().code(200).message("").request(new Request.Builder()
-                    .url("https://test.taiji.io/token/account/" + address)
+                    .url(server + "/token/account/" + address)
                     .build()).protocol(Protocol.HTTP_1_0).body(ResponseBody.create(MediaType.parse("JSON"), RequestCache.getInstance().get(RequestCache.TYPE_TOKENS, address))).build());
             return;
         }
-        get("https://test.taiji.io/token/account/" + address, b);
+        get(server + "/token/account/" + address, b);
     }
 
     public void getFee(String address, Callback b) throws IOException {
         if (RequestCache.getInstance().contains(RequestCache.TYPE_FEES, address.substring(0, 4))) {
             b.onResponse(null, new Response.Builder().code(200).message("").request(new Request.Builder()
-                    .url("https://test.taiji.io/fee/taiji")
+                    .url(server + "/fee/taiji")
                     .build()).protocol(Protocol.HTTP_2).body(ResponseBody.create(MediaType.parse("JSON"), RequestCache.getInstance().get(RequestCache.TYPE_FEES, address.substring(0, 4)))).build());
             return;
         }
-        get("https://test.taiji.io/fee/taiji", b);
+        get(server + "/fee/taiji", b);
     }
 
 
     public void getBalance(String address, Callback b) throws IOException {
-        get("https://test.taiji.io/account/" + address, b);
+        get(server + "/account/" + address, b);
     }
 
 
     public void getNonceForAddress(String address, Callback b) throws IOException {
-        get("https://test.taiji.io/api?module=proxy&action=eth_getTransactionCount&address=" + address + "&tag=latest&apikey=" + token, b);
+        get(server + "/api?module=proxy&action=eth_getTransactionCount&address=" + address, b);
     }
 
 
     public void getBalances(ArrayList<StorableWallet> addresses, Callback b) throws IOException {
-        String url = "https://test.taiji.io/account?addresses=";
+        String url = server + "/account?addresses=";
         for (StorableWallet address : addresses)
             url += address.getPubKey() + ",";
         url = url.substring(0, url.length() - 1); // remove last ,
@@ -138,6 +141,12 @@ public class TaijiAPI {
 
 
     private TaijiAPI() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(WalletApplication.getAppContext());
+        if(preferences.getBoolean("testnetSwitch", true)) {
+            server = "https://test.taiji.io";
+        } else {
+            server = "https://taiji.io";
+        }
     }
 
 }

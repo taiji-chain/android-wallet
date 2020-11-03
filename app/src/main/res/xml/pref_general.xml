@@ -1,6 +1,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <SwitchPreference
+        android:defaultValue="true"
+        android:key="testnetSwitch"
+        android:summary="@string/pref_description_testnet"
+        android:title="@string/pref_title_testnet" />
+
+    <SwitchPreference
         android:defaultValue="false"
         android:key="zeroAmountSwitch"
         android:summary="@string/pref_description_social_recommendations"

@@ -32,6 +32,8 @@
     <string name="pref_title_social_recommendations">Show zero amount transactions</string>
     <string name="pref_description_social_recommendations">Whether to hide contract calls without any taiji amount or not</string>
 
+    <string name="pref_title_testnet">Connect to testnet</string>
+    <string name="pref_description_testnet">Whether to connect to testnet or mainnet for transactions</string>
 
     <string name="pref_title_start">Wallet as default tab</string>
     <string name="pref_sum_start">If enabled the app will start preselected in the wallet tab instead of the price tab</string>

@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.view.View;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.security.Provider;
 import java.security.Security;
 
+import io.taiji.wallet.views.BadgeDrawerArrowDrawable;
 import okhttp3.Response;
 import io.taiji.wallet.R;
 import io.taiji.wallet.data.WatchWallet;
@@ -59,6 +61,7 @@ public class MainActivity extends SecureAppCompatActivity implements NetworkUpda
     private SharedPreferences preferences;
     private AppBarLayout appbar;
     private int generateRefreshCount;
+    private BadgeDrawerArrowDrawable badgeDrawerArrowDrawable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +128,13 @@ public class MainActivity extends SecureAppCompatActivity implements NetworkUpda
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+        if(preferences.getBoolean("testnetSwitch", true)) {
+            badgeDrawerArrowDrawable = new BadgeDrawerArrowDrawable(this);
+            badgeDrawerArrowDrawable.setBackgroundColor(R.color.badge_color);
+            badgeDrawerArrowDrawable.setEnabled(true);
+            badgeDrawerArrowDrawable.setText("T");
+            result.getActionBarDrawerToggle().setDrawerArrowDrawable(badgeDrawerArrowDrawable);
+        }
 
         // ------------------------------------------------------------------------
 
