@@ -5,12 +5,14 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.networknt.taiji.crypto.SignedTransaction;
+import com.networknt.taiji.utility.AddressUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import io.taiji.wallet.WalletApplication;
+import io.taiji.wallet.interfaces.AdDialogResponseHandler;
 import io.taiji.wallet.interfaces.StorableWallet;
 import io.taiji.wallet.utils.OwnWalletUtils;
 import io.taiji.wallet.utils.RequestCache;
@@ -44,7 +46,7 @@ public class TaijiAPI {
 
     public String postTx(String address, SignedTransaction stx) {
         String url = server + "/tx";
-        String bankId = address.substring(0, 4);
+        String bankId = AddressUtil.addressToBankId(address);
         try {
             String s = OwnWalletUtils.objectMapper.writeValueAsString(stx);
             RequestBody body = RequestBody.create(
@@ -75,11 +77,12 @@ public class TaijiAPI {
         if (!force && RequestCache.getInstance().contains(RequestCache.TYPE_TXS, address)) {
             b.onResponse(null, new Response.Builder().code(200).message("").request(new Request.Builder()
                     .url(url)
+                    .addHeader("env_tag", AddressUtil.addressToBankId(address))
                     .build()).protocol(Protocol.HTTP_2).body(ResponseBody.create(MediaType.parse("JSON"), RequestCache.getInstance().get(RequestCache.TYPE_TXS, address))).build());
             return;
         }
         Log.i("TAG", "get transactions " + url);
-        get(url, b);
+        get(url, AddressUtil.addressToBankId(address), b);
     }
 
     /**
@@ -94,56 +97,64 @@ public class TaijiAPI {
         if (!force && RequestCache.getInstance().contains(RequestCache.TYPE_TOKENS, address)) {
             b.onResponse(null, new Response.Builder().code(200).message("").request(new Request.Builder()
                     .url(server + "/token/account/" + address)
+                    .addHeader("env_tag", AddressUtil.addressToBankId(address))
                     .build()).protocol(Protocol.HTTP_1_0).body(ResponseBody.create(MediaType.parse("JSON"), RequestCache.getInstance().get(RequestCache.TYPE_TOKENS, address))).build());
             return;
         }
-        get(server + "/token/account/" + address, b);
+        get(server + "/token/account/" + address, AddressUtil.addressToBankId(address), b);
     }
 
     public void getFee(String address, Callback b) throws IOException {
-        if (RequestCache.getInstance().contains(RequestCache.TYPE_FEES, address.substring(0, 4))) {
+        String bankId = AddressUtil.addressToBankId(address);
+        if (RequestCache.getInstance().contains(RequestCache.TYPE_FEES, bankId)) {
             b.onResponse(null, new Response.Builder().code(200).message("").request(new Request.Builder()
                     .url(server + "/fee/taiji")
-                    .build()).protocol(Protocol.HTTP_2).body(ResponseBody.create(MediaType.parse("JSON"), RequestCache.getInstance().get(RequestCache.TYPE_FEES, address.substring(0, 4)))).build());
+                    .addHeader("env_tag", bankId)
+                    .build()).protocol(Protocol.HTTP_2).body(ResponseBody.create(MediaType.parse("JSON"), RequestCache.getInstance().get(RequestCache.TYPE_FEES, bankId))).build());
             return;
         }
-        get(server + "/fee/taiji", b);
+        get(server + "/fee/taiji", bankId, b);
     }
 
 
     public void getBalance(String address, Callback b) throws IOException {
-        get(server + "/account/" + address, b);
+        get(server + "/account/" + address, AddressUtil.addressToBankId(address), b);
     }
 
 
     public void getNonceForAddress(String address, Callback b) throws IOException {
-        get(server + "/api?module=proxy&action=eth_getTransactionCount&address=" + address, b);
+        get(server + "/api?module=proxy&action=eth_getTransactionCount&address=" + address, AddressUtil.addressToBankId(address), b);
     }
 
 
     public void getBalances(ArrayList<StorableWallet> addresses, Callback b) throws IOException {
         String url = server + "/account?addresses=";
-        for (StorableWallet address : addresses)
+        String bankId = null;
+        for (StorableWallet address : addresses) {
+            if(bankId == null) bankId = AddressUtil.addressToBankId(address.getPubKey());
             url += address.getPubKey() + ",";
+        }
         url = url.substring(0, url.length() - 1); // remove last ,
         Log.i("TAG", "url = " + url);
-        get(url, b);
+        get(url, bankId, b);
     }
 
 
-    public void get(String url, Callback b) throws IOException {
+    public void get(String url, String bankId, Callback b) throws IOException {
+        Log.i("TAG", "bankId = " + bankId);
         Request request = new Request.Builder()
                 .url(url)
+                .addHeader("env_tag", bankId)
                 .build();
 
         client.newCall(request).enqueue(b);
     }
 
-
     private TaijiAPI() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(WalletApplication.getAppContext());
         if(preferences.getBoolean("testnetSwitch", true)) {
             server = "https://test.taiji.io";
+            //server = "https://local.taiji.io";
         } else {
             server = "https://taiji.io";
         }
