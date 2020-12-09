@@ -29,6 +29,7 @@ import io.taiji.wallet.network.TaijiAPI;
 import io.taiji.wallet.utils.WalletStorage;
 
 public class TransactionService extends IntentService {
+    private static final String TAG = "TransactionService";
 
     private NotificationCompat.Builder builder;
     final int mNotificationId = 153;
@@ -58,9 +59,14 @@ public class TransactionService extends IntentService {
             rtx.addDebitEntry(credentials.getAddress(), feeEntry);
             SignedTransaction stx = TransactionManager.signTransaction(rtx, credentials);
             String res = TaijiAPI.getInstance().postTx(fromAddress, stx);
-            Log.i("TAG", "response = " + res);
-            JSONObject object = new JSONObject(res);
-            result(object.getString("statusCode"), object.getString("code"), object.getString("message"), object.getString("description"));
+            Log.i(TAG, "response = " + res);
+            if(res != null) {
+                // there must be an error here.
+                JSONObject object = new JSONObject(res);
+                error(object.toString());
+            } else {
+                result("200", "SUC10200", "OK", "The request is handled successfully");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             error("Invalid Wallet Password!");

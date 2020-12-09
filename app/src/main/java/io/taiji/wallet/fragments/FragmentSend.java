@@ -49,6 +49,7 @@ import io.taiji.wallet.utils.WalletStorage;
 import static android.app.Activity.RESULT_OK;
 
 public class FragmentSend extends Fragment {
+    private static final String TAG = "FragmentSend";
     private SendActivity ac;
     private Button send;
     private EditText amount;
@@ -146,10 +147,10 @@ public class FragmentSend extends Fragment {
         currencySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.i("TAG", "i = " + i + " l = " + l);
-                Log.i("TAG", "unit name = " + unitList.get(i));
+                Log.i(TAG, "i = " + i + " l = " + l);
+                Log.i(TAG, "unit name = " + unitList.get(i));
                 unit = Converter.Unit.fromString(unitList.get(i));
-                Log.i("TAG", "unit = " + unit.toString());
+                Log.i(TAG, "unit = " + unit.toString());
                 updateAmount(amount.getText().toString());
                 updateDisplays();
                 getFee();
@@ -287,6 +288,7 @@ public class FragmentSend extends Fragment {
     }
 
     private void getFee() {
+        Log.i(TAG, "spinner address" + spinner.getSelectedItem());
         try {
             TaijiAPI.getInstance().getFee(spinner.getSelectedItem().toString(), new Callback() {
                 @Override
@@ -297,7 +299,7 @@ public class FragmentSend extends Fragment {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     String restring = response.body().string();
-                    Log.i("TAG", restring);
+                    Log.i(TAG, "restring = " + restring);
                     if (restring != null && restring.length() > 2) {
                         RequestCache.getInstance().put(RequestCache.TYPE_FEES, spinner.getSelectedItem().toString().substring(0, 4), restring);
                     }
@@ -306,13 +308,19 @@ public class FragmentSend extends Fragment {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    Log.i(TAG, "bankFee = " + bankFee);
                     ac.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if(spinner.getSelectedItem().toString().substring(0, 4).equals(toAddress.toString().substring(0, 4))) {
-                                curTxCost = (long)bankFee.getInnerChain();
+                            if(toAddress.getText() != null) {
+                                if(spinner.getSelectedItem().toString().substring(0, 4).equals(toAddress.getText().toString().substring(0, 4))) {
+                                    curTxCost = (long)bankFee.getInnerChain();
+                                } else {
+                                    curTxCost = (long)bankFee.getInterChain();
+                                }
+                                Log.i(TAG, "from = " + spinner.getSelectedItem() + " to = " + toAddress.getText() + " curTxCost = " + curTxCost);
                             } else {
-                                curTxCost = (long)bankFee.getInterChain();
+                                curTxCost = 0L;
                             }
                             txCost.setText(curTxCost.toString());
                         }
