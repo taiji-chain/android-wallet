@@ -312,7 +312,7 @@ public class FragmentSend extends Fragment {
                     ac.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if(toAddress.getText() != null) {
+                            if(toAddress.getText() != null && toAddress.getText().toString() != null && toAddress.getText().toString().length() > 4) {
                                 if(spinner.getSelectedItem().toString().substring(0, 4).equals(toAddress.getText().toString().substring(0, 4))) {
                                     curTxCost = (long)bankFee.getInnerChain();
                                 } else {

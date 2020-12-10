@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
@@ -28,6 +29,7 @@ import io.taiji.wallet.utils.Blockies;
 import io.taiji.wallet.utils.WalletStorage;
 
 public class NotificationService extends IntentService {
+    private static final String TAG = "NotificationService";
 
     public NotificationService() {
         super("Notification Service");
@@ -51,6 +53,7 @@ public class NotificationService extends IntentService {
                 public void onResponse(Call call, final Response response) throws IOException {
                     JSONArray data = null;
                     try {
+                        Log.i(TAG, "body = " + response.body().toString());
                         data = new JSONArray(response.body().string());
                         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(NotificationService.this);
                         boolean notify = false;

@@ -60,7 +60,7 @@ public class TransactionService extends IntentService {
             SignedTransaction stx = TransactionManager.signTransaction(rtx, credentials);
             String res = TaijiAPI.getInstance().postTx(fromAddress, stx);
             Log.i(TAG, "response = " + res);
-            if(res != null) {
+            if(res != null && res.trim().length() > 0) {
                 // there must be an error here.
                 JSONObject object = new JSONObject(res);
                 error(object.toString());
